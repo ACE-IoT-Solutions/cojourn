@@ -1,0 +1,216 @@
+{
+  "models": [
+    {
+      "name": "cta_2045_emerson_tstat",
+      "type": "hvac",
+      "model": {
+        "current_temperature": {
+          "value": "72.0",
+          "unit": "F",
+          "type": "float"
+        },
+        "current_mode": {
+          "value": "heat",
+          "unit": "State",
+          "type": "enum",
+          "states": [
+            "heat",
+            "cool",
+            "auto",
+            "off"
+          ]
+        },
+        "current_heat_setpoint": {
+          "value": "72.0",
+          "unit": "F",
+          "type": "float"
+        },
+        "current_cool_setpoint": {
+          "value": "72.0",
+          "unit": "F",
+          "type": "float"
+        },
+        "current_fan_mode": {
+          "value": "auto",
+          "unit": "State",
+          "type": "enum",
+          "states": [
+            "auto",
+            "on"
+          ]
+        },
+        "current_state": {
+          "value": "heat",
+          "unit": "State",
+          "type": "enum",
+          "states": [
+            "heat",
+            "cool",
+            "auto",
+            "off"
+          ]
+        }
+      }
+    },
+    {
+      "name": "ecobee",
+      "type": "hvac",
+      "model": {
+        "current_temperature": {
+          "value": "72.0",
+          "unit": "F",
+          "type": "float"
+        },
+        "current_mode": {
+          "value": "heat",
+          "unit": "State",
+          "type": "enum",
+          "states": [
+            "heat",
+            "cool",
+            "auto",
+            "off"
+          ]
+        },
+        "current_heat_setpoint": {
+          "value": "72.0",
+          "unit": "F",
+          "type": "float"
+        },
+        "current_cool_setpoint": {
+          "value": "72.0",
+          "unit": "F",
+          "type": "float"
+        },
+        "current_fan_mode": {
+          "value": "auto",
+          "unit": "State",
+          "type": "enum",
+          "states": [
+            "auto",
+            "on"
+          ]
+        },
+        "current_state": {
+          "value": "heat",
+          "unit": "State",
+          "type": "enum",
+          "states": [
+            "heat",
+            "cool",
+            "auto",
+            "off"
+          ]
+        }
+      }
+    },
+    {
+      "name": "cta_2045_siemens_ev",
+      "type": "ev",
+      "model": {
+      // "current_power":  { "value": "0.0", "unit": "W", "type": "float"},
+        "power_level": {
+          "value": "0.0",
+          "unit": "%",
+          "type": "float"
+        },
+        "current_state": {
+          "value": "idle",
+          "unit": "state",
+          "type": "enum",
+          "states": [
+            "idle_normal",
+            "running_normal",
+            "running_curtailed",
+            "running_heightened",
+            "idle_curtailed",
+            "sgd_error_condition",
+            "idle_heightened",
+            "cycling_on",
+            "cycling_off",
+            "variable_following",
+            "variable_notfollowing",
+            "idle_opted_out",
+            "running_opted_out"
+          ]
+        }
+      },
+    {
+      "name": "cta_2045_water_heater_aosmith", 
+      "type": "water_heater",
+      "model": {
+        "current_state": {
+          "value": "idle",
+          "unit": "state",
+          "type": "enum",
+          "states": [
+            "idle_normal",
+            "running_normal",
+            "running_curtailed",
+            "running_heightened",
+            "idle_curtailed",
+            "sgd_error_condition",
+            "idle_heightened",
+            "cycling_on",
+            "cycling_off",
+            "variable_following",
+            "variable_notfollowing",
+            "idle_opted_out",
+            "running_opted_out"
+          ]
+        },
+        "present_energy_storage": {
+          "value": "0.0",
+          "unit": "Wh",
+          "type": "float"
+        },
+        "total_energy_storage": {
+          "value": "0.0",
+          "unit": "Wh",
+          "type": "float"
+        },
+        "rated_max_consumption": {
+          "value": "0.0",
+          "unit": "W",
+          "type": "float"
+        },
+        "cumulative_amount": {
+            "value": "0.0",
+            "unit": "Wh",
+            "type": "float"
+        },
+        "instantaneous_rate": {
+          "value": "0.0",
+          "unit": "W",
+          "type": "float"
+        }
+    },
+    {"name": "cta_2045_pool_pump",
+    "type": "pool_pump",
+    "model": {
+        "current_state": {
+          "value": "idle",
+          "unit": "state",
+          "type": "enum",
+          "states": [
+            "idle_normal",
+            "running_normal",
+            "running_curtailed",
+            "running_heightened",
+            "idle_curtailed",
+            "sgd_error_condition",
+            "idle_heightened",
+            "cycling_on",
+            "cycling_off",
+            "variable_following",
+            "variable_notfollowing",
+            "idle_opted_out",
+            "running_opted_out"
+          ]
+        },
+        "
+    }}
+
+
+  ]
+}
