@@ -1,9 +1,10 @@
 {
   "models": [
     {
-      "name": "cta_2045_emerson_tstat",
-      "type": "hvac",
-      "model": {
+      "name": "cta_2045_emerson_tstat", # Thermostat Connected via CTA 2045
+      "type": "hvac", # Device archetype, which will define the minimum functionality
+      "model": { # Model specific parameters, as key: dict pairs, each key would be a parameter 
+                 # name that may be published on the actual serialization interface
         "current_temperature": {
           "value": "72.0",
           "unit": "F",
@@ -12,7 +13,7 @@
         "current_mode": {
           "value": "heat",
           "unit": "State",
-          "type": "enum",
+          "type": "enum"
           "states": [
             "heat",
             "cool",
@@ -134,9 +135,10 @@
             "running_opted_out"
           ]
         }
-      },
+      }
+    },
     {
-      "name": "cta_2045_water_heater_aosmith", 
+      "name": "cta_2045_water_heater_aosmith",
       "type": "water_heater",
       "model": {
         "current_state": {
@@ -175,19 +177,21 @@
           "type": "float"
         },
         "cumulative_amount": {
-            "value": "0.0",
-            "unit": "Wh",
-            "type": "float"
+          "value": "0.0",
+          "unit": "Wh",
+          "type": "float"
         },
         "instantaneous_rate": {
           "value": "0.0",
           "unit": "W",
           "type": "float"
         }
+      }
     },
-    {"name": "cta_2045_pool_pump",
-    "type": "pool_pump",
-    "model": {
+    {
+      "name": "cta_2045_pool_pump",
+      "type": "pool_pump",
+      "model": {
         "current_state": {
           "value": "idle",
           "unit": "state",
@@ -208,9 +212,83 @@
             "running_opted_out"
           ]
         },
-        "
-    }}
-
-
+        "present_energy_storage": {
+          "value": "0.0",
+          "unit": "Wh",
+          "type": "float"
+        },
+        "total_energy_storage": {
+          "value": "0.0",
+          "unit": "Wh",
+          "type": "float"
+        },
+        "rated_max_consumption": {
+          "value": "0.0",
+          "unit": "W",
+          "type": "float"
+        },
+        "cumulative_amount": {
+          "value": "0.0",
+          "unit": "Wh",
+          "type": "float"
+        },
+        "instantaneous_rate": {
+          "value": "0.0",
+          "unit": "W",
+          "type": "float"
+        }
+      }
+    },
+    {
+      "name": "ieee1547_battery_storage",
+      "type": "battery",
+      "model": {
+        "current_state": {
+          "value": "idle",
+          "unit": "state",
+          "type": "enum",
+          "states": [
+            "idle_normal",
+            "running_normal",
+            "running_curtailed",
+            "running_heightened",
+            "idle_curtailed",
+            "sgd_error_condition",
+            "idle_heightened",
+            "cycling_on",
+            "cycling_off",
+            "variable_following",
+            "variable_notfollowing",
+            "idle_opted_out",
+            "running_opted_out"
+          ]
+        },
+        "present_energy_storage": {
+          "value": "0.0",
+          "unit": "Wh",
+          "type": "float"
+        },
+        "total_energy_storage": {
+          "value": "0.0",
+          "unit": "Wh",
+          "type": "float"
+        },
+        "rated_max_consumption": {
+          "value": "0.0",
+          "unit": "W",
+          "type": "float"
+        },
+        "cumulative_amount": {
+          "value": "0.0",
+          "unit": "Wh",
+          "type": "float"
+        },
+        "instantaneous_rate": {
+          "value": "0.0",
+          "unit": "W",
+          "type": "float"
+        }
+      }
+    }
   ]
 }
