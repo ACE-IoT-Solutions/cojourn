@@ -30,3 +30,9 @@ The Swagger UI is a convenient GUI for interacting with the existing endpoints.
 - Profit!
 
 Once authorized, try hitting the `GET /devices` endpoint. You should receive a `200` response with some interesting device data. If you receive a `422` or otherwise you probably have a poorly-formed JWT.
+
+Sample JWT to get started:
+```
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.W9wGb8Cs1SoCoiJ6WRzK6NMg7xed7PBNYJpBNIoD_G8
+```
+
