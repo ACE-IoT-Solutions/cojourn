@@ -9,7 +9,12 @@ pipenv install
 
 ### Start the dev server at [http://localhost:5000/api/v1](http://localhost:5000/api/v1)
 ```
-% pipenv shell
-((cojourn)) % cd api_mock
-((cojourn)) % FLASK_APP=main FLASK_ENV=development flask run
+pipenv run python api_mock/main.py
+```
+
+Alternatively (if you're not into the whole brevity thing)
+```
+pipenv shell
+cd api_mock
+FLASK_APP=main FLASK_ENV=development flask run
 ```
