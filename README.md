@@ -1,18 +1,13 @@
-# Cojourn
+## Cojourn
 A small dev server to accelerate development on the Open HEMS mobile app.
 
-# Installation
-1. Install [`pipenv`](http://pipenv.pypa.io)
+### Installation
 ```
 brew install pipenv
-```
-
-2. Install project dependencies
-```
 pipenv install
 ```
 
-# Run the dev server
+### Start the dev server at [http://localhost:5000/api/v1](http://localhost:5000/api/v1)
 ```
 % pipenv shell
 ((cojourn)) % cd api_mock
