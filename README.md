@@ -18,6 +18,11 @@ pipenv shell
 FLASK_APP=main FLASK_ENV=development flask run
 ```
 
+### Running Tests
+```
+pipenv run pytest
+```
+
 ### Interacting with [Swagger UI](http://localhost:5000/api/v1)
 The Swagger UI is a convenient GUI for interacting with the existing endpoints.
 
