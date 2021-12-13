@@ -57,7 +57,7 @@ DAO.create({
 class DeviceList(Resource):
     '''Shows a list of all devices'''
     @api.doc('list_devices')
-    @api.marshal_list_with(device)
+    @api.marshal_list_with(device, envelope='devices')
     @jwt_required()
     def get(self):
         '''List all devices'''
@@ -78,7 +78,7 @@ class DeviceList(Resource):
 class Device(Resource):
     '''Get device by id'''
     @api.doc('get device by id')
-    @api.marshal_with({ "device": device })
+    @api.marshal_with(device, envelope='device')
     @jwt_required()
     def get(self, id):
         '''get device by id'''

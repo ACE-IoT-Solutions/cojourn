@@ -19,7 +19,9 @@ def test_device_list(authenticated_client):
     response = authenticated_client.get("/api/v1/devices/")
     device_data = json.loads(response.data)
 
-    assert device_data[0] == thermostat_data
+    assert isinstance(device_data, dict)
+    assert device_data['devices'] is not None
+    assert device_data["devices"][0] == thermostat_data
 
 def test_device_endpoints(authenticated_client):
     response = authenticated_client.get("/api/v1/devices/e4d197aa-fa13-4255-b395-63268be12515")
