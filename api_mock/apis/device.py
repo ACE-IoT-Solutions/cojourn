@@ -13,16 +13,6 @@ device = api.model('Device', {
     'provisioned': fields.Boolean(required=True, description='The Device\'s Provisioned Status'),
 })
 
-
-test_device = {
-    "id": "e4d197aa-fa13-4255-b395-63268be12515",
-    "name": "Living Room",
-    "type": "thermostat",
-    "location": "Living Room",
-    "status": "on",
-    "provisioned": True
-}
-
 class DeviceDAO(object):
     def __init__(self):
         self.devices = []
@@ -51,10 +41,17 @@ class DeviceDAO(object):
         device = self.get(id)
         self.devices.remove(device)  
 
-
 DAO = DeviceDAO()
-DAO.create(test_device)
 
+# Thermostat
+DAO.create({
+    "id": "e4d197aa-fa13-4255-b395-63268be12515",
+    "name": "Living Room",
+    "type": "thermostat",
+    "location": "Living Room",
+    "status": "on",
+    "provisioned": True
+})
 
 @api.route('/')
 class DeviceList(Resource):
@@ -81,7 +78,7 @@ class DeviceList(Resource):
 class Device(Resource):
     '''Get device by id'''
     @api.doc('get device by id')
-    @api.marshal_with(device)
+    @api.marshal_with({ "device": device })
     @jwt_required()
     def get(self, id):
         '''get device by id'''
