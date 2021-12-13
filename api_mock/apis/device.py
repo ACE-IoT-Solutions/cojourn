@@ -43,11 +43,46 @@ class DeviceDAO(object):
 
 DAO = DeviceDAO()
 
-# Thermostat
 DAO.create({
     "id": "e4d197aa-fa13-4255-b395-63268be12515",
     "name": "Living Room",
     "type": "thermostat",
+    "location": "Living Room",
+    "status": "on",
+    "provisioned": True
+})
+
+DAO.create({
+    "id": "f8204550-32cc-44aa-bf48-a95a90c1504f",
+    "name": "Linda's Charger",
+    "type": "car_charger",
+    "location": "Living Room",
+    "status": "on",
+    "provisioned": True
+})
+
+DAO.create({
+    "id": "8b98e3cf-af15-4ead-8d5e-a2d389723a25",
+    "name": "Solar Energy",
+    "type": "solar_panels",
+    "location": "Living Room",
+    "status": "on",
+    "provisioned": True
+})
+
+DAO.create({
+    "id": "a3f67bfe-0b41-4054-889e-fa1d6c5d93d1",
+    "name": "Water Heater",
+    "type": "water_heater",
+    "location": "Living Room",
+    "status": "on",
+    "provisioned": True
+})
+
+DAO.create({
+    "id": "052fe39f-5439-4682-beca-b10f2ea00113",
+    "name": "Home Battery",
+    "type": "home_battery",
     "location": "Living Room",
     "status": "on",
     "provisioned": True
