@@ -1,9 +1,11 @@
 {
-  "id": "052fe39f-5439-4682-beca-b10f2ea00113",
-  "name": "Home Battery",
-  "type": "home_battery",
-  "location": "Living Room",
-  "status": "on",
-  "provisioned": true,
-  "charge_percentage": "78.22"
+  "device": {
+    "id": "052fe39f-5439-4682-beca-b10f2ea00113",
+    "name": "Home Battery",
+    "type": "home_battery",
+    "location": "Living Room",
+    "status": "on",
+    "provisioned": true,
+    "charge_percentage": "78.22"
+  }
 }

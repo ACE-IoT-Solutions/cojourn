@@ -1,9 +1,11 @@
 {
-  "id": "e4d197aa-fa13-4255-b395-63268be12515",
-  "name": "Living Room",
-  "type": "thermostat",
-  "location": "Living Room",
-  "status": "on",
-  "provisioned": true,
-  "current_temperature": "23.00"
+  "device": {
+    "id": "e4d197aa-fa13-4255-b395-63268be12515",
+    "name": "Living Room",
+    "type": "thermostat",
+    "location": "Living Room",
+    "status": "on",
+    "provisioned": true,
+    "current_temperature": "23.00"
+  }
 }
