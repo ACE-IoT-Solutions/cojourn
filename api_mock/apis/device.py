@@ -18,38 +18,34 @@ device = api.model('Device', {
 })
 
 
-test_device = {
-    "id": "e4d197aa-fa13-4255-b395-63268be12515",
-    "name": "Living Room",
-    "type": "thermostat",
-    "location": "Living Room",
-    "status": "on",
-    "provisioned": True
-}
-
 class DeviceDAO(object):
     def __init__(self):
         self.fs_storage_path = Path(__file__).parents[1] / "data" / "device.json"
         self.devices = []
         
+    def read_device_data(self) -> List[dict]:
         if self.fs_storage_path.exists():
             with open(self.fs_storage_path) as device_data:
                 try:
                     self.devices = json.load(device_data)
                 except JSONDecodeError:
                     return []
-        return self.devices
+            return self.devices
         return []
 
+    def get_device_by_id(self, device_id: str) -> Union[dict, tuple]:
         for device in self.read_device_data():
             if device['id'] == device_id:
                 return device
         api.abort(HTTPStatus.NOT_FOUND, f"device {device_id} doesn't exist")
 
+    def device_exists(self, device_id) -> bool:
         for device in self.read_device_data():
             if device_id == device["id"]:
                 return True
         return False
+        
+    def create(self, data: dict) -> dict:
         device = data
         device['id'] = data["id"]
         if  self.device_exists(device["id"]):
@@ -61,16 +57,17 @@ class DeviceDAO(object):
         
         return device
 
+    def update(self, device_id: str, data: dict) -> dict:
         device = self.get_device_by_id(device_id)
         device.update(data)
         return device
 
+    def delete(self, device_id: str):
         device = self.get_device_by_id(device_id)
         self.devices.remove(device)  
 
 
 DAO = DeviceDAO()
-DAO.create(test_device)
 
 
 @api.route('/')
@@ -81,7 +78,7 @@ class DeviceList(Resource):
     @jwt_required()
     def get(self):
         '''List all devices'''
-        return DAO.get_list(), HTTPStatus.OK
+        return DAO.read_device_data(), HTTPStatus.OK
 
 
     @api.doc('create_device')
@@ -90,7 +87,6 @@ class DeviceList(Resource):
     @jwt_required()
     def post(self):
         '''Create a new device'''
-        api.pa
         return DAO.create(api.payload), HTTPStatus.CREATED
 
 
@@ -102,7 +98,7 @@ class Device(Resource):
     @jwt_required()
     def get(self, id):
         '''get device by id'''
-        return DAO.get(id), HTTPStatus.OK
+        return DAO.get_device_by_id(id), HTTPStatus.OK
 
 
     @api.doc('create_device')
