@@ -1,6 +1,10 @@
+from json.decoder import JSONDecodeError
+from typing import List, Union
 from flask_jwt_extended.view_decorators import jwt_required
 from flask_restx import fields, Namespace, Resource
 from http import HTTPStatus
+import json
+from pathlib import Path
 
 api = Namespace('devices', description='HEMS Operations')
 
@@ -25,30 +29,43 @@ test_device = {
 
 class DeviceDAO(object):
     def __init__(self):
+        self.fs_storage_path = Path(__file__).parents[1] / "data" / "device.json"
         self.devices = []
         
-    def get_list(self):
+        if self.fs_storage_path.exists():
+            with open(self.fs_storage_path) as device_data:
+                try:
+                    self.devices = json.load(device_data)
+                except JSONDecodeError:
+                    return []
         return self.devices
+        return []
 
-    def get(self, id):
-        for device in self.devices:
-            if device['id'] == id:
+        for device in self.read_device_data():
+            if device['id'] == device_id:
                 return device
-        api.abort(HTTPStatus.NOT_FOUND, f"device {id} doesn't exist")
+        api.abort(HTTPStatus.NOT_FOUND, f"device {device_id} doesn't exist")
 
-    def create(self, data):
+        for device in self.read_device_data():
+            if device_id == device["id"]:
+                return True
+        return False
         device = data
         device['id'] = data["id"]
-        self.devices.append(device)
+        if  self.device_exists(device["id"]):
+            api.abort(HTTPStatus.CONFLICT, f"device {device['id']} already exist")
+        devices = self.read_device_data()
+        devices.append(device)
+        with open(self.fs_storage_path, "w") as device_data:
+            json.dump(devices, device_data)
+        
         return device
 
-    def update(self, id, data):
-        device = self.get(id)
+        device = self.get_device_by_id(device_id)
         device.update(data)
         return device
 
-    def delete(self, id):
-        device = self.get(id)
+        device = self.get_device_by_id(device_id)
         self.devices.remove(device)  
 
 
