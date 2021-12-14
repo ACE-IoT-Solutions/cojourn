@@ -9,14 +9,18 @@ pipenv install
 
 ### Start the dev server at [localhost:5000](localhost:5000)
 ```
-pipenv run python api_mock/main.py
+pipenv run python main.py
 ```
 
 Alternatively (if you're not into the whole brevity thing)
 ```
 pipenv shell
-cd api_mock
 FLASK_APP=main FLASK_ENV=development flask run
+```
+
+### Running Tests
+```
+pipenv run pytest
 ```
 
 ### Interacting with [Swagger UI](http://localhost:5000/api/v1)
