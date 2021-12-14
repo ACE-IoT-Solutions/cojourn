@@ -1,0 +1,8 @@
+{
+  "id": "8b98e3cf-af15-4ead-8d5e-a2d389723a25",
+  "name": "Solar Energy",
+  "type": "solar_panels",
+  "location": "Living Room",
+  "status": "on",
+  "provisioned": true
+}
