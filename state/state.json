@@ -6,7 +6,8 @@
       "type": "thermostat",
       "location": "Living Room",
       "status": "on",
-      "provisioned": true
+      "provisioned": true,
+      "current_temperature": 23
     },
 
     {
@@ -15,7 +16,8 @@
       "type": "car_charger",
       "location": "Living Room",
       "status": "on",
-      "provisioned": true
+      "provisioned": true,
+      "charge_rate": "medium"
     },
 
 
@@ -25,7 +27,8 @@
       "type": "solar_panels",
       "location": "Living Room",
       "status": "on",
-      "provisioned": true
+      "provisioned": true,
+      "power_generated_today": 10000
     },
 
     {
@@ -34,7 +37,8 @@
       "type": "water_heater",
       "location": "Living Room",
       "status": "on",
-      "provisioned": true
+      "provisioned": true,
+      "label": "active"
     },
 
     {
@@ -43,7 +47,8 @@
       "type": "home_battery",
       "location": "Living Room",
       "status": "on",
-      "provisioned": true
+      "provisioned": true,
+      "charge_percentage": 78.22
     }
   ]
 }

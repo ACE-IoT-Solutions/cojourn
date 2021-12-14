@@ -4,5 +4,6 @@
   "type": "home_battery",
   "location": "Living Room",
   "status": "on",
-  "provisioned": true
+  "provisioned": true,
+  "charge_percentage": "78.22"
 }

@@ -12,6 +12,21 @@ device = api.model('Device', {
     'location': fields.String(required=True, description='The Device\'s Location'),
     'status': fields.String(required=True, description='The Device\'s Status'),
     'provisioned': fields.Boolean(required=True, description='The Device\'s Provisioned Status'),
+
+    # Thermostat
+    'current_temperature': fields.Fixed(decimals=2, required=False, description='Thermostat Current Temperature (C)'),
+
+    # Car Charger
+    'charge_rate': fields.String(required=False, description='Car Charger Charge Rate (idle, low, medium, high)'),
+
+    # Solar Panels
+    'power_generated_today': fields.Fixed(decimals=2, required=False, description='Solar Panels Power Generated Today (wH)'),
+
+    # Water Heater
+    'label': fields.String(required=False, description='The Device\'s Status Label (active, inactive)'),
+
+    # Home Battery
+    'charge_percentage': fields.Fixed(decimals=2, required=False, description='Home Battery % Charged')
 })
 
 class DeviceDAO(object):
@@ -49,7 +64,7 @@ DAO = DeviceDAO(state['devices'])
 class DeviceList(Resource):
     '''Shows a list of all devices'''
     @api.doc('list_devices')
-    @api.marshal_list_with(device, envelope='devices')
+    @api.marshal_list_with(device, envelope='devices', skip_none=True)
     @jwt_required()
     def get(self):
         '''List all devices'''
@@ -70,7 +85,7 @@ class DeviceList(Resource):
 class Device(Resource):
     '''Get device by id'''
     @api.doc('get device by id')
-    @api.marshal_with(device, envelope='device')
+    @api.marshal_with(device, envelope='device', skip_none=True)
     @jwt_required()
     def get(self, id):
         '''get device by id'''
