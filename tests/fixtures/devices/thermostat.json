@@ -6,6 +6,7 @@
     "location": "Living Room",
     "status": "on",
     "provisioned": true,
-    "current_temperature": "23.00"
+    "current_temperature": "23.00",
+    "mode": "auto"
   }
 }

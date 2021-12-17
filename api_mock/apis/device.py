@@ -15,6 +15,7 @@ device = api.model('Device', {
 
     # Thermostat
     'current_temperature': fields.Fixed(decimals=2, required=False, description='Thermostat Current Temperature (C)'),
+    'mode': fields.String(required=False, description='Thermostat Current Mode (auto, heat, cool, eco, off)'),
 
     # Car Charger
     'charge_rate': fields.String(required=False, description='Car Charger Charge Rate (idle, low, medium, high)'),
