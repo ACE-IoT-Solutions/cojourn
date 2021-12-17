@@ -20,6 +20,7 @@
       "location": "Living Room",
       "status": "on",
       "provisioned": true,
+      "charge_percentage": "66.10",
       "charge_rate": "medium"
     },
     {
@@ -48,6 +49,7 @@
       "status": "on",
       "provisioned": true,
       "charge_percentage": "78.22",
+      "charge_rate": "idle",
       "reserve_limit": "40.00"
     }
   ]

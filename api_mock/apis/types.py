@@ -13,3 +13,9 @@ class Weather(str, Enum):
     PARTLY_CLOUDY = 'partly_cloudy'
     RAINY = 'rainy'
     WINDY = 'windy'
+
+class ChargeRate(str, Enum):
+    IDLE = 'idle'
+    LOW = 'low'
+    MEDIUM = 'medium'
+    HIGH = 'high'

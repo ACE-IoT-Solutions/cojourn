@@ -7,6 +7,7 @@
     "status": "on",
     "provisioned": true,
     "charge_percentage": "78.22",
+    "charge_rate": "idle",
     "reserve_limit": "40.00"
   }
 }
