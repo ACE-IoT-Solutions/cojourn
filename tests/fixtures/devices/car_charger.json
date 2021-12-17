@@ -6,6 +6,7 @@
     "location": "Living Room",
     "status": "on",
     "provisioned": true,
+    "charge_percentage": "66.10",
     "charge_rate": "medium"
   }
 }

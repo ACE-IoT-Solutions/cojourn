@@ -7,7 +7,11 @@
       "location": "Living Room",
       "status": "on",
       "provisioned": true,
-      "current_temperature": "23.00"
+      "current_temperature": "23.00",
+      "mode": "auto",
+      "interior_temperature": "21.50",
+      "exterior_temperature": "8.25",
+      "exterior_weather": "clear"
     },
     {
       "id": "f8204550-32cc-44aa-bf48-a95a90c1504f",
@@ -16,6 +20,7 @@
       "location": "Living Room",
       "status": "on",
       "provisioned": true,
+      "charge_percentage": "66.10",
       "charge_rate": "medium"
     },
     {
@@ -43,7 +48,9 @@
       "location": "Living Room",
       "status": "on",
       "provisioned": true,
-      "charge_percentage": "78.22"
+      "charge_percentage": "78.22",
+      "charge_rate": "idle",
+      "reserve_limit": "40.00"
     }
   ]
 }

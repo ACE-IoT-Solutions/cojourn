@@ -2,6 +2,7 @@ from flask_jwt_extended.view_decorators import jwt_required
 from flask_restx import fields, Namespace, Resource
 from http import HTTPStatus
 from state import load_state
+from .types import ThermostatMode, Weather, ChargeRate
 
 api = Namespace('devices', description='HEMS Operations')
 
@@ -15,9 +16,18 @@ device = api.model('Device', {
 
     # Thermostat
     'current_temperature': fields.Fixed(decimals=2, required=False, description='Thermostat Current Temperature (C)'),
-
-    # Car Charger
-    'charge_rate': fields.String(required=False, description='Car Charger Charge Rate (idle, low, medium, high)'),
+    'mode': fields.String(
+        required=False, 
+        enum=[mode for mode in ThermostatMode],
+        description='Thermostat Current Mode'
+    ),
+    'interior_temperature': fields.Fixed(decimals=2, required=False, description='Thermostat Interior Temperature (C)'),
+    'exterior_temperature': fields.Fixed(decimals=2, required=False, description='Thermostat Exterior Temperature (C)'),
+    'exterior_weather': fields.String(
+        required=False,
+        enum=[weather for weather in Weather],
+        description='Weather description'
+    ),
 
     # Solar Panels
     'power_generated_today': fields.Fixed(decimals=2, required=False, description='Solar Panels Power Generated Today (wH)'),
@@ -26,7 +36,18 @@ device = api.model('Device', {
     'label': fields.String(required=False, description='The Device\'s Status Label (active, inactive)'),
 
     # Home Battery
-    'charge_percentage': fields.Fixed(decimals=2, required=False, description='Home Battery % Charged')
+    "reserve_limit": fields.Fixed(decimals=2, required=False, description='Home Battery Reserve Limit %'),
+
+    # Shared
+    # 'charge_percentage' applicable to EV Charge and Home Battery
+    'charge_percentage': fields.Fixed(decimals=2, required=False, description='The Device\'s Charge Amount %'),
+
+    # 'charge_rate' applicable to EV Charger and Home Battery
+    'charge_rate': fields.String(
+        required=False,
+        enum=[c for c in ChargeRate],
+        description='The Device\'s Charge Rate'
+    )
 })
 
 class DeviceDAO(object):
