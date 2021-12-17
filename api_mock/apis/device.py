@@ -2,6 +2,7 @@ from flask_jwt_extended.view_decorators import jwt_required
 from flask_restx import fields, Namespace, Resource
 from http import HTTPStatus
 from state import load_state
+from .types import ThermostatMode
 
 api = Namespace('devices', description='HEMS Operations')
 
@@ -15,7 +16,11 @@ device = api.model('Device', {
 
     # Thermostat
     'current_temperature': fields.Fixed(decimals=2, required=False, description='Thermostat Current Temperature (C)'),
-    'mode': fields.String(required=False, description='Thermostat Current Mode (auto, heat, cool, eco, off)'),
+    'mode': fields.String(
+        required=False, 
+        enum=[mode for mode in ThermostatMode],
+        description='Thermostat Current Mode (auto, heat, cool, eco, off)'
+    ),
 
     # Car Charger
     'charge_rate': fields.String(required=False, description='Car Charger Charge Rate (idle, low, medium, high)'),
