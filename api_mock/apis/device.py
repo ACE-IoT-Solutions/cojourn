@@ -39,7 +39,8 @@ device = api.model('Device', {
     'label': fields.String(required=False, description='The Device\'s Status Label (active, inactive)'),
 
     # Home Battery
-    'charge_percentage': fields.Fixed(decimals=2, required=False, description='Home Battery % Charged')
+    'charge_percentage': fields.Fixed(decimals=2, required=False, description='Home Battery Charge Amount %'),
+    "reserve_limit": fields.Fixed(decimals=2, required=False, description='Home Battery Reserve Limit %'),
 })
 
 class DeviceDAO(object):

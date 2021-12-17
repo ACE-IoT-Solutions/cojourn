@@ -47,7 +47,8 @@
       "location": "Living Room",
       "status": "on",
       "provisioned": true,
-      "charge_percentage": "78.22"
+      "charge_percentage": "78.22",
+      "reserve_limit": "40.00"
     }
   ]
 }
