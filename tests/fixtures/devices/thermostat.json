@@ -7,6 +7,9 @@
     "status": "on",
     "provisioned": true,
     "current_temperature": "23.00",
-    "mode": "auto"
+    "mode": "auto",
+    "interior_temperature": "21.50",
+    "exterior_temperature": "8.25",
+    "exterior_weather": "clear"
   }
 }
