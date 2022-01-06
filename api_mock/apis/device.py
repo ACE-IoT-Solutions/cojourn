@@ -128,4 +128,4 @@ class Device(Resource):
     @jwt_required()
     def patch(self, id):
         '''update device state'''
-        return DAO.update(api.payload), HTTPStatus.OK
+        return DAO.update(id, api.payload), HTTPStatus.OK
