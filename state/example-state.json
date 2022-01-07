@@ -1,0 +1,56 @@
+{
+  "devices": [
+    {
+      "current_temperature": 23,
+      "exterior_temperature": 8.25,
+      "exterior_weather": "clear",
+      "id": "e4d197aa-fa13-4255-b395-63268be12515",
+      "interior_temperature": 21.5,
+      "location": "Living Room",
+      "mode": "heat",
+      "name": "Living Room",
+      "provisioned": true,
+      "status": "on",
+      "type": "thermostat"
+    },
+    {
+      "charge_percentage": 66.1,
+      "charge_rate": "medium",
+      "id": "f8204550-32cc-44aa-bf48-a95a90c1504f",
+      "location": "Living Room",
+      "name": "Linda's Charger",
+      "provisioned": true,
+      "status": "on",
+      "type": "car_charger"
+    },
+    {
+      "id": "8b98e3cf-af15-4ead-8d5e-a2d389723a25",
+      "location": "Living Room",
+      "name": "Solar Energy",
+      "power_generated_today": 10000,
+      "provisioned": true,
+      "status": "on",
+      "type": "solar_panels"
+    },
+    {
+      "id": "a3f67bfe-0b41-4054-889e-fa1d6c5d93d1",
+      "label": "active",
+      "location": "Living Room",
+      "name": "Water Heater",
+      "provisioned": true,
+      "status": "on",
+      "type": "water_heater"
+    },
+    {
+      "charge_percentage": 78.22,
+      "charge_rate": "idle",
+      "id": "052fe39f-5439-4682-beca-b10f2ea00113",
+      "location": "Living Room",
+      "name": "Home Battery",
+      "provisioned": true,
+      "reserve_limit": 40.0,
+      "status": "on",
+      "type": "home_battery"
+    }
+  ]
+}
