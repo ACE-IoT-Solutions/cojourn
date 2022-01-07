@@ -1,7 +1,7 @@
 from flask_jwt_extended.view_decorators import jwt_required
 from flask_restx import fields, Namespace, Resource
 from http import HTTPStatus
-from state import load_state
+from state import load_state, save_state
 from .types import ThermostatMode, Weather, ChargeRate
 
 api = Namespace('devices', description='HEMS Operations')
@@ -94,12 +94,13 @@ class DeviceList(Resource):
 
     @api.doc('create_device')
     @api.expect(device)
-    @api.marshal_with(device, code=HTTPStatus.CREATED)
+    @api.marshal_with(device, envelope='device', code=HTTPStatus.CREATED)
     @jwt_required()
     def post(self):
         '''Create a new device'''
-        api.pa
-        return DAO.create(api.payload), HTTPStatus.CREATED
+        myDevice = DAO.create(api.payload)
+        save_state({ "devices": DAO.get_list() })
+        return myDevice, HTTPStatus.CREATED
 
 
 @api.route('/<string:id>')
@@ -111,21 +112,16 @@ class Device(Resource):
     def get(self, id):
         '''get device by id'''
         return DAO.get(id), HTTPStatus.OK
-
-
-    @api.doc('create_device')
-    @api.expect(device)
-    @api.marshal_with(device, code=HTTPStatus.CREATED)
-    @jwt_required()
-    def post(self):
-        '''Create a new device'''
-        return DAO.create(api.payload), HTTPStatus.CREATED
-    
     
     @api.doc('update_device')
     @api.expect(device)
-    @api.marshal_with(device, code=HTTPStatus.OK)
+    @api.marshal_with(device, envelope='device', code=HTTPStatus.OK)
     @jwt_required()
     def patch(self, id):
         '''update device state'''
-        return DAO.update(id, api.payload), HTTPStatus.OK
+        if (api.payload is None):
+            return 'No payload', HTTPStatus.BAD_REQUEST
+
+        myDevice = DAO.update(id, api.payload)
+        save_state({ "devices": DAO.get_list() })
+        return myDevice, HTTPStatus.OK
