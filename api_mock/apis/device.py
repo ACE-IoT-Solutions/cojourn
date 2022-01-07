@@ -119,6 +119,9 @@ class Device(Resource):
     @jwt_required()
     def patch(self, id):
         '''update device state'''
+        if (api.payload is None):
+            return 'No payload', HTTPStatus.BAD_REQUEST
+
         myDevice = DAO.update(id, api.payload)
         save_state({ "devices": DAO.get_list() })
         return myDevice, HTTPStatus.OK
