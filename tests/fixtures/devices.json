@@ -21,7 +21,8 @@
       "status": "on",
       "provisioned": true,
       "charge_percentage": "66.10",
-      "charge_rate": "medium"
+      "charge_rate": "medium",
+      "service": "unlimited"
     },
     {
       "id": "8b98e3cf-af15-4ead-8d5e-a2d389723a25",
@@ -50,7 +51,8 @@
       "provisioned": true,
       "charge_percentage": "78.22",
       "charge_rate": "idle",
-      "reserve_limit": "40.00"
+      "reserve_limit": "40.00",
+      "service": "unlimited"
     }
   ]
 }

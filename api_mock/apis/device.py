@@ -2,7 +2,7 @@ from flask_jwt_extended.view_decorators import jwt_required
 from flask_restx import fields, Namespace, Resource
 from http import HTTPStatus
 from state import load_state, save_state
-from .types import ThermostatMode, Weather, ChargeRate
+from .types import ThermostatMode, Weather, ChargeRate, ChargeService
 
 api = Namespace('devices', description='HEMS Operations')
 
@@ -39,6 +39,13 @@ device = api.model('Device', {
     "reserve_limit": fields.Fixed(decimals=2, required=False, description='Home Battery Reserve Limit %'),
 
     # Shared
+    # 'service': applicable to EV Charge and Home Battery
+    'service': fields.String(
+        required=False,
+        enum=[service for service in ChargeService],
+        description='Service description'
+    ),
+
     # 'charge_percentage' applicable to EV Charge and Home Battery
     'charge_percentage': fields.Fixed(decimals=2, required=False, description='The Device\'s Charge Amount %'),
 

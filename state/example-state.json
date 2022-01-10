@@ -7,7 +7,7 @@
       "id": "e4d197aa-fa13-4255-b395-63268be12515",
       "interior_temperature": 21.5,
       "location": "Living Room",
-      "mode": "heat",
+      "mode": "auto",
       "name": "Living Room",
       "provisioned": true,
       "status": "on",
@@ -21,7 +21,8 @@
       "name": "Linda's Charger",
       "provisioned": true,
       "status": "on",
-      "type": "car_charger"
+      "type": "car_charger",
+      "service": "unlimited"
     },
     {
       "id": "8b98e3cf-af15-4ead-8d5e-a2d389723a25",
@@ -50,7 +51,8 @@
       "provisioned": true,
       "reserve_limit": 40.0,
       "status": "on",
-      "type": "home_battery"
+      "type": "home_battery",
+      "service": "unlimited"
     }
   ]
 }

@@ -19,3 +19,6 @@ class ChargeRate(str, Enum):
     LOW = 'low'
     MEDIUM = 'medium'
     HIGH = 'high'
+
+class ChargeService(str, Enum):
+    UNLIMITED = 'unlimited'
