@@ -6,6 +6,8 @@
     "location": "Living Room",
     "status": "on",
     "provisioned": true,
-    "power_generated_today": "10000.00"
+    "label": "active",
+    "power_generated_this_month": "200000.00",
+    "power_sent_to_grid_this_month": "20000.00"
   }
 }

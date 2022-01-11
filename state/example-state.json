@@ -28,10 +28,12 @@
       "id": "8b98e3cf-af15-4ead-8d5e-a2d389723a25",
       "location": "Living Room",
       "name": "Solar Energy",
-      "power_generated_today": 10000,
       "provisioned": true,
       "status": "on",
-      "type": "solar_panels"
+      "type": "solar_panels",
+      "label": "active",
+      "power_generated_this_month": 200000,
+      "power_sent_to_grid_this_month": 20000
     },
     {
       "id": "a3f67bfe-0b41-4054-889e-fa1d6c5d93d1",
