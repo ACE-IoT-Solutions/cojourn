@@ -31,7 +31,9 @@
       "location": "Living Room",
       "status": "on",
       "provisioned": true,
-      "power_generated_today": "10000.00"
+      "label": "active",
+      "power_generated_this_month": "200000.00",
+      "power_sent_to_grid_this_month": "20000.00"
     },
     {
       "id": "a3f67bfe-0b41-4054-889e-fa1d6c5d93d1",

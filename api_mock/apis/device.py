@@ -30,26 +30,30 @@ device = api.model('Device', {
     ),
 
     # Solar Panels
-    'power_generated_today': fields.Fixed(decimals=2, required=False, description='Solar Panels Power Generated Today (wH)'),
+    'power_generated_this_month': fields.Fixed(decimals=2, required=False, description='Solar Panels Monthly Power Generated (wH)'),
+    'power_sent_to_grid_this_month': fields.Fixed(decimals=2, required=False, description='Solar Panels Monthly Power Sent to Grid (wH)'),
 
     # Water Heater
-    'label': fields.String(required=False, description='The Device\'s Status Label (active, inactive)'),
 
     # Home Battery
     "reserve_limit": fields.Fixed(decimals=2, required=False, description='Home Battery Reserve Limit %'),
 
     # Shared
-    # 'service': applicable to EV Charge and Home Battery
+
+    # 'label': Water Heater, Solar Panels
+    'label': fields.String(required=False, description='The Device\'s Status Label (active, inactive)'),
+    
+    # 'service': EV Charger, Home Battery
     'service': fields.String(
         required=False,
         enum=[service for service in ChargeService],
         description='Service description'
     ),
 
-    # 'charge_percentage' applicable to EV Charge and Home Battery
+    # 'charge_percentage' EV Charger, Home Battery
     'charge_percentage': fields.Fixed(decimals=2, required=False, description='The Device\'s Charge Amount %'),
 
-    # 'charge_rate' applicable to EV Charger and Home Battery
+    # 'charge_rate': EV Charger, Home Battery
     'charge_rate': fields.String(
         required=False,
         enum=[c for c in ChargeRate],
