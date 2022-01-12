@@ -7,7 +7,7 @@ from .types import ThermostatMode, Weather, ChargeRate
 api = Namespace('devices', description='HEMS Operations')
 
 device = api.model('Device', {
-    'id': fields.String(readonly=True, description='The Device unique identifier'),
+    'id': fields.String(required=True, description='The Device unique identifier'),
     'name': fields.String(required=True, description='The Device\'s Name'),
     'type': fields.String(required=True, description='The Device\'s Type'),
     'location': fields.String(required=True, description='The Device\'s Location'),
@@ -51,7 +51,7 @@ device = api.model('Device', {
 })
 
 class DeviceDAO(object):
-    def __init__(self, devices):
+    def __init__(self, devices=[]):
         self.devices = devices
         
     def get_list(self):
@@ -79,7 +79,7 @@ class DeviceDAO(object):
         self.devices.remove(device)  
 
 state = load_state()
-DAO = DeviceDAO(state['devices'])
+DAO = DeviceDAO(state.get("devices", []))
 
 @api.route('/')
 class DeviceList(Resource):
@@ -99,7 +99,8 @@ class DeviceList(Resource):
     def post(self):
         '''Create a new device'''
         myDevice = DAO.create(api.payload)
-        save_state({ "devices": DAO.get_list() })
+        state["devices"] = DAO.get_list()
+        save_state(state)
         return myDevice, HTTPStatus.CREATED
 
 
@@ -123,5 +124,6 @@ class Device(Resource):
             return 'No payload', HTTPStatus.BAD_REQUEST
 
         myDevice = DAO.update(id, api.payload)
-        save_state({ "devices": DAO.get_list() })
+        state["devices"] = DAO.get_list()
+        save_state(state)
         return myDevice, HTTPStatus.OK
