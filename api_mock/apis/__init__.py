@@ -5,7 +5,7 @@ from .device import api as device_ns
 from .hems import api as hems_ns
 from .user import api as user_ns
 from .auth import api as auth_ns
-from .site import api as site_ns
+from .home import api as home_ns
 
 
 api_blueprint = Blueprint("api", __name__, url_prefix="/api/v1")
@@ -26,6 +26,6 @@ api = Api(api_blueprint,
 
 api.add_namespace(device_ns)
 api.add_namespace(hems_ns)
-api.add_namespace(site_ns)
+api.add_namespace(home_ns)
 api.add_namespace(user_ns)
 api.add_namespace(auth_ns)

@@ -4,13 +4,13 @@ from http import HTTPStatus
 from state import load_state, save_state
 from operator import itemgetter
 
-api = Namespace('sites', description='HEMS Operations')
+api = Namespace('home', description='Home Operations')
 lpc_config = api.model("Lpc Config", {
-        "name": fields.String(),
-        "status_communication": fields.Boolean(),
-        "technical_contact": fields.String(),
-        "technical_phone": fields.String(),
-        "technical_email": fields.String(),
+        "name": fields.String(description="LPC name"),
+        "status_communication": fields.Boolean(description="Whether the home is communicating"),
+        "technical_contact": fields.String(description="Technical contact phone/email/phone and email"),
+        "technical_phone": fields.String(description="Technical contact phone number"),
+        "technical_email": fields.String(description="Technical contact email"),
         })
 
 site = api.model('Site', {
