@@ -4,7 +4,7 @@ from http import HTTPStatus
 from state import load_state, save_state
 from .types import ThermostatMode, Weather, ChargeRate
 
-api = Namespace('devices', description='HEMS Operations')
+api = Namespace('devices', description='Device Operations')
 
 device = api.model('Device', {
     'id': fields.String(required=True, description='The Device unique identifier'),
