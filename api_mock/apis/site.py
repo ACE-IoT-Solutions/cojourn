@@ -13,88 +13,53 @@ lpc_config = api.model("Lpc Config", {
         "technical_email": fields.String(description="Technical contact email"),
         })
 
-site = api.model('Site', {
-    'id': fields.String(readonly=True, description='The Site unique identifier'),
+home = api.model('Home', {
+    'id': fields.String(readonly=True, description='The Home unique identifier'),
     "lpc_config": fields.Nested(lpc_config)
 })
 
-class SiteDAO(object):
-    def __init__(self, sites=[]):
-        self.sites = sites
-        self.curr_id = 0 if sites == [] else sorted(sites, key=itemgetter("id"))[-1]["id"]
+class HomeDAO(object):
+    def __init__(self, home=None):
+        self.home = home
         
-    def get_list(self):
-        return self.sites
-
-    def get(self, id):
-        for site in self.sites:
-            if site['id'] == id:
-                return site
-        api.abort(HTTPStatus.NOT_FOUND, f"site {id} doesn't exist")
+    def get(self):
+        if self.home is None:
+            api.abort(HTTPStatus.NOT_FOUND, f"home doesn't exist")    
+        return self.home
 
     def create(self, data):
-        site = data
-        site['id'] = self.curr_id
-        print(f"{self.curr_id=}")
-        self.curr_id += 1
-        self.sites.append(site)
-        return site
+        self.home = data
+        return home
 
-    def update(self, id, data):
-        site = self.get(id)
-        site.update(data)
-        return site
+    def update(self, data):
+        self.home.update(data)
+        return home
 
-    def delete(self, id):
-        site = self.get(id)
-        self.sites.remove(site)  
+    def delete(self):
+        self.home = None
 
 state = load_state()
-DAO = SiteDAO(state.get("sites", []))
+DAO = HomeDAO(state.get("home", None))
 
 @api.route('/')
-class DeviceList(Resource):
-    '''Shows a list of all sites'''
-    @api.doc('list_sites')
-    @api.marshal_list_with(site, envelope='sites', skip_none=True)
-    @jwt_required()
-    def get(self):
-        '''List all sites'''
-        return DAO.get_list(), HTTPStatus.OK
-
-
-    @api.doc('create_site')
-    @api.expect(site)
-    @api.marshal_with(site, envelope='site', code=HTTPStatus.CREATED)
+class Home(Resource):
+    @api.doc('create_home')
+    @api.expect(home)
+    @api.marshal_with(home, envelope='home', code=HTTPStatus.CREATED)
     @jwt_required()
     def post(self):
-        '''Create a new site'''
+        '''Create a new home'''
         myDevice = DAO.create(api.payload)
-        state["sites"] = DAO.get_list()
+        state["home"] = DAO.get()
         save_state(state)
         return myDevice, HTTPStatus.CREATED
 
-
-@api.route('/<int:id>')
-class Site(Resource):
-    '''Get site by id'''
-    @api.doc('get site by id')
-    @api.marshal_with(site, envelope='site', skip_none=True)
+@api.route('/config')
+class Config(Resource):
+    '''Shows home configuration'''
+    @api.doc('home_config')
+    @api.marshal_list_with(home, envelope='home', skip_none=True)
     @jwt_required()
-    def get(self, id):
-        '''get site by id'''
-        return DAO.get(id), HTTPStatus.OK
-    
-    @api.doc('update_device')
-    @api.expect(site)
-    @api.marshal_with(site, envelope='site', code=HTTPStatus.OK)
-    @jwt_required()
-    def patch(self, id):
-        '''update site state'''
-        if (api.payload is None):
-            return 'No payload', HTTPStatus.BAD_REQUEST
-
-        myDevice = DAO.update(id, api.payload)
-        state["sites"] = DAO.get_list()
-        save_state(state)
-        return myDevice, HTTPStatus.OK
+    def get(self):
+        '''Get home configuration'''
+        return DAO.get(), HTTPStatus.OK
