@@ -7,9 +7,15 @@ brew install pipenv
 pipenv install
 ```
 
-### Start the dev server at [localhost:5000](localhost:5000)
+### Start the dev server 
+#### [localhost:5000](localhost:5000)
 ```
 pipenv run python main.py
+```
+
+#### On your LAN
+```
+pipenv run python main.py --lan
 ```
 
 Alternatively (if you're not into the whole brevity thing)
