@@ -5,12 +5,18 @@ from state import load_state, save_state
 from operator import itemgetter
 
 api = Namespace('home', description='Home Operations')
+status_message = api.model('StatusMessage', {
+    'title': fields.String(required=True, description='The title of the message'),
+    'message': fields.String(required=True, description='The message')
+})
 lpc_config = api.model("LPC Config", {
         "name": fields.String(description="LPC name"),
-        "status_communication": fields.Boolean(description="Whether the home is communicating"),
+        "status_communication": fields.Boolean(description="Whether the LPC can send custom status messages"),
         "technical_contact": fields.String(description="Technical contact phone/email/phone and email"),
         "technical_phone": fields.String(description="Technical contact phone number"),
         "technical_email": fields.String(description="Technical contact email"),
+        "default_event_message": fields.Nested(status_message),
+        "current_event_message": fields.Nested(status_message),
         })
 
 home = api.model('Home', {
