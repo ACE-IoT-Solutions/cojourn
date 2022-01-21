@@ -4,7 +4,7 @@
     "name": "Solar Energy",
     "type": "solar_panels",
     "location": "Living Room",
-    "status": "on",
+    "status": "active",
     "provisioned": true,
     "label": "active",
     "power_generated_this_month": "200000.00",

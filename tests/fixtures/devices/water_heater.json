@@ -4,7 +4,7 @@
     "name": "Water Heater",
     "type": "water_heater",
     "location": "Living Room",
-    "status": "on",
+    "status": "active",
     "provisioned": true,
     "label": "active"
   }
