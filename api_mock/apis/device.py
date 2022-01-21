@@ -2,7 +2,7 @@ from flask_jwt_extended.view_decorators import jwt_required
 from flask_restx import fields, Namespace, Resource
 from http import HTTPStatus
 from state import load_state, save_state
-from .types import ThermostatMode, Weather, ChargeRate, ChargeService
+from .types import DeviceStatus, ThermostatMode, Weather, ChargeRate, ChargeService
 
 api = Namespace('devices', description='Device Operations')
 
@@ -11,8 +11,8 @@ device = api.model('Device', {
     'name': fields.String(required=True, description='The Device\'s Name'),
     'type': fields.String(required=True, description='The Device\'s Type'),
     'location': fields.String(required=True, description='The Device\'s Location'),
-    'status': fields.String(required=True, description='The Device\'s Status'),
     'provisioned': fields.Boolean(required=True, description='The Device\'s Provisioned Status'),
+    'status': fields.String(required=True, description='The Device\'s Status', enum=[status for status in DeviceStatus]),
 
     # Thermostat
     'current_temperature': fields.Fixed(decimals=2, required=False, description='Thermostat Current Temperature (C)'),
@@ -39,9 +39,8 @@ device = api.model('Device', {
     "reserve_limit": fields.Fixed(decimals=2, required=False, description='Home Battery Reserve Limit %'),
 
     # Shared
-
     # 'label': Water Heater, Solar Panels
-    'label': fields.String(required=False, description='The Device\'s Status Label (active, inactive)'),
+    'label': fields.String(required=False, description='The Device\'s Status (deprecated)', enum=[status for status in DeviceStatus]),
     
     # 'service': EV Charger, Home Battery
     'service': fields.String(
