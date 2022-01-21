@@ -4,7 +4,7 @@
     "name": "Living Room",
     "type": "thermostat",
     "location": "Living Room",
-    "status": "on",
+    "status": "active",
     "provisioned": true,
     "current_temperature": "23.00",
     "mode": "auto",

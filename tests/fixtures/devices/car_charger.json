@@ -4,7 +4,7 @@
     "name": "Linda's Charger",
     "type": "car_charger",
     "location": "Living Room",
-    "status": "on",
+    "status": "active",
     "provisioned": true,
     "charge_percentage": "66.10",
     "charge_rate": "medium",
