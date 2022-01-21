@@ -5,7 +5,7 @@ from state import load_state, save_state
 from operator import itemgetter
 
 api = Namespace('home', description='Home Operations')
-lpc_config = api.model("Lpc Config", {
+lpc_config = api.model("LPC Config", {
         "name": fields.String(description="LPC name"),
         "status_communication": fields.Boolean(description="Whether the home is communicating"),
         "technical_contact": fields.String(description="Technical contact phone/email/phone and email"),
