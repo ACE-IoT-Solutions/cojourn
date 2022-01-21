@@ -22,4 +22,5 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 app = create_app()
-app.run(host=options.host, port=options.port, debug=True)
+if __name__ == "__main__":
+  app.run(host=options.host, port=options.port, debug=True)
