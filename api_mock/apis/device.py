@@ -17,7 +17,7 @@ device = api.model('Device', {
     'status': fields.String(required=True, description='The Device\'s Status', enum=[status for status in DeviceStatus]),
     })
 
-    # Thermostat
+# Thermostat
 thermostat = api.inherit("Thermostat", device, {'current_temperature': fields.Fixed(decimals=2, required=False, description='Thermostat Current Temperature (C)'),
     'mode': fields.String(
         required=False, 
@@ -43,7 +43,7 @@ list_of_generation_samples = api.model('List of Generation Samples', {
     'samples': fields.List(fields.Nested(generation_sample))
     })
 
-    # Solar Panels
+# Solar Panels
 solar_panels = api.inherit("Solar Panels", device, {
     'label': fields.String(required=False, description='The Device\'s Status (deprecated)', enum=[status for status in DeviceStatus]),
     'power_generated_this_month': fields.Fixed(readOnly=True, decimals=2, description='Power Generated This Month (wH)'),
@@ -55,9 +55,9 @@ list_of_solar_panels = api.model('List of Solar Panels', {
     'solar_panels': fields.List(fields.Nested(solar_panels))
     })
 
-    # Water Heater
+# Water Heater
 
-    # Home Battery
+# Home Battery
 home_battery = api.inherit("Home Battery", device, {
     "reserve_limit": fields.Fixed(decimals=2, required=False, description='Home Battery Reserve Limit %'),
     'service': fields.String(
@@ -71,7 +71,7 @@ home_battery = api.inherit("Home Battery", device, {
         enum=[c for c in ChargeRate],
         description='The Device\'s Charge Rate'
     )})
-    
+                           
 ev_charger = api.inherit("EV Charger", device, {
     'service': fields.String(
         required=False,
@@ -169,3 +169,36 @@ class Device(Resource):
         state["devices"] = DAO.get_list()
         save_state(state)
         return myDevice, HTTPStatus.OK
+        
+
+@api.route('/solar-panels/generation')
+class DeviceType(Resource):
+    '''Get timeseries generatio ndata for solar panels'''
+    @api.doc('get timeseries generation data for solar panels')
+    @api.marshal_list_with(generation_sample, envelope='generation_samples', skip_none=True)
+    @jwt_required()
+    def get(self):
+        '''get timeseries generation data for solar panels'''
+        return self.get_timeseries(), HTTPStatus.OK
+    
+    def get_timeseries(self):
+        devices = DAO.get_list()
+        solar_panels = (
+            [device for device in devices 
+             if device['type'].lower() == 'solar_panels' 
+             and device.get('generation_samples') is not None
+             and device.get('generation_samples') != []]
+            )
+        samples = []
+        
+        for device in solar_panels:
+            device_samples = list(
+                map(
+                    lambda sample: {"name": device["name"], **sample}, 
+                    device['generation_samples']))
+            
+            if device_samples is not None and device_samples != []:
+                samples += device_samples
+        
+        return samples
+            
