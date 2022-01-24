@@ -7,11 +7,12 @@
       "location": "Living Room",
       "status": "active",
       "provisioned": true,
-      "current_temperature": "23.00",
       "mode": "auto",
-      "interior_temperature": "21.50",
+      "interior_temperature": "23.00",
       "exterior_temperature": "8.25",
-      "exterior_weather": "clear"
+      "exterior_weather": "clear",
+      "setpoint": "25.00",
+      "setpoint_span": "2.00"
     },
     {
       "id": "f8204550-32cc-44aa-bf48-a95a90c1504f",
