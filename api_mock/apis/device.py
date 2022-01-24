@@ -23,7 +23,6 @@ device = api.model('Device', {
         description='Thermostat Current Mode'
     ),
     'setpoint': fields.Fixed(decimals=2, required=False, description='Thermostat target temperature (C)'),
-    # setpoint_span – this should 
     'setpoint_span': fields.Fixed(
         decimals=2, 
         required=False, 
