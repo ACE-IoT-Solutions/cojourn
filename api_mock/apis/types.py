@@ -4,6 +4,13 @@ class DeviceStatus(str, Enum):
     ACTIVE = 'active'
     INACTIVE = 'inactive'
 
+class WaterHeaterService(str, Enum):
+    HIGH_DEMAND = 'high_demand'
+    HEAT_PUMP = 'heat_pump'
+    NORMAL = 'normal'
+    ENERGY_SAVER = 'energy_saver'
+    VACATION = 'vacation'
+
 class ThermostatMode(str, Enum):
     AUTO = 'auto'
     HEAT = 'heat'

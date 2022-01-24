@@ -2,7 +2,7 @@ from flask_jwt_extended.view_decorators import jwt_required
 from flask_restx import fields, Namespace, Resource
 from http import HTTPStatus
 from state import load_state, save_state
-from .types import DeviceStatus, ThermostatMode, Weather, ChargeRate, ChargeService
+from .types import DeviceStatus, ThermostatMode, WaterHeaterService, Weather, ChargeRate, ChargeService
 
 api = Namespace('devices', description='Device Operations')
 
@@ -34,6 +34,11 @@ device = api.model('Device', {
     'power_sent_to_grid_this_month': fields.Fixed(decimals=2, required=False, description='Solar Panels Monthly Power Sent to Grid (wH)'),
 
     # Water Heater
+    'water_heater_service': fields.String(
+        required=False, 
+        description='Water Heater service', 
+        enum=[status for status in WaterHeaterService]
+    ),
 
     # Home Battery
     "reserve_limit": fields.Fixed(decimals=2, required=False, description='Home Battery Reserve Limit %'),
@@ -41,7 +46,7 @@ device = api.model('Device', {
     # Shared
     # 'label': Water Heater, Solar Panels
     'label': fields.String(required=False, description='The Device\'s Status (deprecated)', enum=[status for status in DeviceStatus]),
-    
+
     # 'service': EV Charger, Home Battery
     'service': fields.String(
         required=False,
