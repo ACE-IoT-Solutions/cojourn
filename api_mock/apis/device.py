@@ -4,6 +4,7 @@ from http import HTTPStatus
 
 import jwt
 from state import load_state, save_state
+
 from .types import DemandResponseStatus, DeviceStatus, ThermostatMode, Weather, ChargeRate, ChargeService
 
 api = Namespace('devices', description='Device Operations')
@@ -41,19 +42,17 @@ device = api.model('Device', {
     'power_generated_this_month': fields.Fixed(decimals=2, required=False, description='Solar Panels Monthly Power Generated (wH)'),
     'power_sent_to_grid_this_month': fields.Fixed(decimals=2, required=False, description='Solar Panels Monthly Power Sent to Grid (wH)'),
 
-    # Water Heater
-
     # Home Battery
     "reserve_limit": fields.Fixed(decimals=2, required=False, description='Home Battery Reserve Limit %'),
 
     # Shared
     # 'label': Water Heater, Solar Panels
     'label': fields.String(required=False, description='The Device\'s Status (deprecated)', enum=[status for status in DeviceStatus]),
-    
+
     # 'service': EV Charger, Home Battery
     'service': fields.String(
         required=False,
-        enum=[service for service in ChargeService],
+        enum=[service for service in DeviceService],
         description='Service description'
     ),
 
