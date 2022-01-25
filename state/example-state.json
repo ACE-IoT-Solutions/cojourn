@@ -12,6 +12,7 @@
       "name": "Living Room",
       "provisioned": true,
       "status": "active",
+      "dr_status": "normal",
       "type": "thermostat"
     },
     {
@@ -22,6 +23,7 @@
       "name": "Linda's Charger",
       "provisioned": true,
       "status": "active",
+      "dr_status": "normal",
       "type": "car_charger",
       "service": "unlimited"
     },
@@ -31,6 +33,7 @@
       "name": "Solar Energy",
       "provisioned": true,
       "status": "active",
+      "dr_status": "normal",
       "type": "solar_panels",
       "label": "active",
       "power_generated_this_month": 200000,
@@ -43,6 +46,7 @@
       "name": "Water Heater",
       "provisioned": true,
       "status": "active",
+      "dr_status": "normal",
       "type": "water_heater"
     },
     {
@@ -55,6 +59,7 @@
       "reserve_limit": 40.0,
       "status": "active",
       "type": "home_battery",
+      "dr_status": "normal",
       "service": "unlimited"
     }
   ],

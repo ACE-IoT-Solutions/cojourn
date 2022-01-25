@@ -5,6 +5,7 @@
     "type": "thermostat",
     "location": "Living Room",
     "status": "active",
+    "dr_status": "normal",
     "provisioned": true,
     "mode": "auto",
     "interior_temperature": "23.00",

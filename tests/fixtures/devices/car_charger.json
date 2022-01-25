@@ -5,6 +5,7 @@
     "type": "car_charger",
     "location": "Living Room",
     "status": "active",
+    "dr_status": "normal",
     "provisioned": true,
     "charge_percentage": "66.10",
     "charge_rate": "medium",

@@ -5,6 +5,7 @@
     "type": "solar_panels",
     "location": "Living Room",
     "status": "active",
+    "dr_status": "normal",
     "provisioned": true,
     "label": "active",
     "power_generated_this_month": "200000.00",

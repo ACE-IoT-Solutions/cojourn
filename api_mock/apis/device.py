@@ -4,7 +4,7 @@ from http import HTTPStatus
 
 import jwt
 from state import load_state, save_state
-from .types import DeviceStatus, ThermostatMode, Weather, ChargeRate, ChargeService
+from .types import DemandResponseStatus, DeviceStatus, ThermostatMode, Weather, ChargeRate, ChargeService
 
 api = Namespace('devices', description='Device Operations')
 
@@ -15,6 +15,7 @@ device = api.model('Device', {
     'location': fields.String(required=True, description='The Device\'s Location'),
     'provisioned': fields.Boolean(required=True, description='The Device\'s Provisioned Status'),
     'status': fields.String(required=True, description='The Device\'s Status', enum=[status for status in DeviceStatus]),
+    'dr_status': fields.String(required=True, description='Demand Response Status', enum=[status for status in DemandResponseStatus]),
 
     # Thermostat
     'mode': fields.String(
