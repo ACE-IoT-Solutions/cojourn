@@ -5,6 +5,7 @@
     "type": "water_heater",
     "location": "Living Room",
     "status": "active",
+    "dr_status": "normal",
     "provisioned": true,
     "label": "active"
   }

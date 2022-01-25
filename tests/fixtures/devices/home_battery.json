@@ -5,6 +5,7 @@
     "type": "home_battery",
     "location": "Living Room",
     "status": "active",
+    "dr_status": "normal",
     "provisioned": true,
     "charge_percentage": "78.22",
     "charge_rate": "idle",
