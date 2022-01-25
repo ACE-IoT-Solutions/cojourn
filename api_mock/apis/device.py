@@ -1,3 +1,5 @@
+import json
+from random import sample
 from flask_jwt_extended.view_decorators import jwt_required
 from flask_restx import fields, Namespace, Resource
 from http import HTTPStatus
@@ -17,8 +19,11 @@ device = api.model('Device', {
     'provisioned': fields.Boolean(required=True, description='The Device\'s Provisioned Status'),
     'status': fields.String(required=True, description='The Device\'s Status', enum=[status for status in DeviceStatus]),
     'dr_status': fields.String(required=True, description='Demand Response Status', enum=[status for status in DemandResponseStatus]),
+})
 
-    # Thermostat
+# create thermostat api model
+# Thermostat
+thermostat = api.inherit("Thermostat", device, {
     'mode': fields.String(
         required=False, 
         enum=[mode for mode in ThermostatMode],
@@ -36,36 +41,67 @@ device = api.model('Device', {
         required=False,
         enum=[weather for weather in Weather],
         description='Weather description'
-    ),
+    )})
 
-    # Solar Panels
-    'power_generated_this_month': fields.Fixed(decimals=2, required=False, description='Solar Panels Monthly Power Generated (wH)'),
-    'power_sent_to_grid_this_month': fields.Fixed(decimals=2, required=False, description='Solar Panels Monthly Power Sent to Grid (wH)'),
+generation_sample = api.model('Generation Sample', {
+    'name': fields.String(readOnly=True, description='The Device\'s Name'),
+    'timestamp': fields.DateTime(readOnly=True, description='Timestamp of the sample'),
+    'power_generated': fields.Fixed(readOnly=True, decimals=2, description='Power Generated (wH)'),
+    'power_sent_to_grid': fields.Fixed(readonly=True, decimals=2, description='Power Sent to Grid (wH)'),
+    })
 
-    # Home Battery
-    "reserve_limit": fields.Fixed(decimals=2, required=False, description='Home Battery Reserve Limit %'),
+list_of_generation_samples = api.model('List of Generation Samples', {
+    'samples': fields.List(fields.Nested(generation_sample))
+    })
 
-    # Shared
-    # 'label': Water Heater, Solar Panels
+# Solar Panels
+solar_panels = api.inherit("Solar Panels", device, {
     'label': fields.String(required=False, description='The Device\'s Status (deprecated)', enum=[status for status in DeviceStatus]),
+    'power_generated_this_month': fields.Fixed(readOnly=True, decimals=2, description='Power Generated This Month (wH)'),
+    'power_sent_to_grid_this_month': fields.Fixed(readOnly=True, decimals=2, description='Power Sent to Grid This Month (wH)'),
+    'generation_samples': fields.Nested(list_of_generation_samples)
+    })
 
-    # 'service': EV Charger, Home Battery
+list_of_solar_panels = api.model('List of Solar Panels', {
+    'solar_panels': fields.List(fields.Nested(solar_panels))
+    })
+
+# Water Heater
+
+# Home Battery
+home_battery = api.inherit("Home Battery", device, {
+    "reserve_limit": fields.Fixed(decimals=2, required=False, description='Home Battery Reserve Limit %'),
     'service': fields.String(
         required=False,
         enum=[service for service in DeviceService],
         description='Service description'
     ),
-
-    # 'charge_percentage' EV Charger, Home Battery
     'charge_percentage': fields.Fixed(decimals=2, required=False, description='The Device\'s Charge Amount %'),
-
-    # 'charge_rate': EV Charger, Home Battery
     'charge_rate': fields.String(
         required=False,
         enum=[c for c in ChargeRate],
         description='The Device\'s Charge Rate'
-    )
+    )})
+                           
+ev_charger = api.inherit("EV Charger", device, {
+    'service': fields.String(
+        required=False,
+        enum=[service for service in DeviceService],
+        description='Service description'
+    ),
+    'charge_percentage': fields.Fixed(decimals=2, required=False, description='The Device\'s Charge Amount %'),
+    'charge_rate': fields.String(
+        required=False,
+        enum=[c for c in ChargeRate],
+        description='The Device\'s Charge Rate'
+    )})
+
+# Shared
+# 'label': Water Heater, Solar Panels
+water_heater = api.inherit("Water Heater", device, {
+    'label': fields.String(required=False, description='The Device\'s Status (deprecated)', enum=[status for status in DeviceStatus]),
 })
+                               
 
 class DeviceDAO(object):
     def __thermostat_setpoint_span(self, mode: ThermostatMode):
@@ -161,6 +197,39 @@ class Device(Resource):
         state["devices"] = DAO.get_list()
         save_state(state)
         return myDevice, HTTPStatus.OK
+        
+
+@api.route('/solar-panels/generation')
+class DeviceType(Resource):
+    '''Get timeseries generatio ndata for solar panels'''
+    @api.doc('get timeseries generation data for solar panels')
+    @api.marshal_list_with(generation_sample, envelope='generation_samples', skip_none=True)
+    @jwt_required()
+    def get(self):
+        '''get timeseries generation data for solar panels'''
+        return self.get_timeseries(), HTTPStatus.OK
+    
+    def get_timeseries(self):
+        devices = DAO.get_list()
+        solar_panels = (
+            [device for device in devices 
+             if device['type'].lower() == 'solar_panels' 
+             and device.get('generation_samples') is not None
+             and device.get('generation_samples') != []]
+            )
+        samples = []
+        
+        for device in solar_panels:
+            device_samples = list(
+                map(
+                    lambda sample: {"name": device["name"], **sample}, 
+                    device['generation_samples']))
+            
+            if device_samples is not None and device_samples != []:
+                samples += device_samples
+        
+        return samples
+            
 
 
 temperature_params = api.model('TemperatureParams', {
