@@ -5,7 +5,7 @@ from http import HTTPStatus
 import jwt
 from state import load_state, save_state
 
-from .types import DemandResponseStatus, DeviceStatus, ThermostatMode, Weather, ChargeRate, ChargeService
+from .types import DemandResponseStatus, DeviceStatus, DeviceService, ThermostatMode, Weather, ChargeRate
 
 api = Namespace('devices', description='Device Operations')
 
