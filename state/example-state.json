@@ -1,16 +1,18 @@
 {
   "devices": [
     {
-      "current_temperature": 23,
+      "interior_temperature": 23.00,
       "exterior_temperature": 8.25,
       "exterior_weather": "clear",
       "id": "e4d197aa-fa13-4255-b395-63268be12515",
-      "interior_temperature": 21.5,
+      "setpoint": 25.0, 
+      "setpoint_span": 2.0,
       "location": "Living Room",
       "mode": "auto",
       "name": "Living Room",
       "provisioned": true,
       "status": "active",
+      "dr_status": "normal",
       "type": "thermostat"
     },
     {
@@ -21,6 +23,7 @@
       "name": "Linda's Charger",
       "provisioned": true,
       "status": "active",
+      "dr_status": "normal",
       "type": "car_charger",
       "service": "unlimited"
     },
@@ -30,6 +33,7 @@
       "name": "Solar Energy",
       "provisioned": true,
       "status": "active",
+      "dr_status": "normal",
       "type": "solar_panels",
       "label": "active",
       "power_generated_this_month": 200000,
@@ -2828,6 +2832,7 @@
       "name": "Water Heater",
       "provisioned": true,
       "status": "active",
+      "dr_status": "normal",
       "type": "water_heater"
     },
     {
@@ -2840,6 +2845,7 @@
       "reserve_limit": 40.0,
       "status": "active",
       "type": "home_battery",
+      "dr_status": "normal",
       "service": "unlimited"
     }
   ],

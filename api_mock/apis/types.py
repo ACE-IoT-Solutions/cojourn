@@ -1,5 +1,11 @@
 from enum import Enum
 
+class DemandResponseStatus(str, Enum):
+    NORMAL = 'normal'
+    CURTAILED = 'curtailed'
+    HEIGHTENED = 'heightened'
+    OPTED_OUT = 'opted_out'
+
 class DeviceStatus(str, Enum):
     ACTIVE = 'active'
     INACTIVE = 'inactive'
@@ -24,5 +30,18 @@ class ChargeRate(str, Enum):
     MEDIUM = 'medium'
     HIGH = 'high'
 
-class ChargeService(str, Enum):
+class WaterHeaterService(str, Enum):
+    HIGH_DEMAND = 'high_demand'
+    HEAT_PUMP = 'heat_pump'
+    NORMAL = 'normal'
+    ENERGY_SAVER = 'energy_saver'
+    VACATION = 'vacation'
+
+class DeviceService(str, Enum):
     UNLIMITED = 'unlimited'
+
+    HIGH_DEMAND = WaterHeaterService.HIGH_DEMAND
+    HEAT_PUMP = WaterHeaterService.HEAT_PUMP
+    NORMAL = WaterHeaterService.NORMAL
+    ENERGY_SAVER = WaterHeaterService.ENERGY_SAVER
+    VACATION = WaterHeaterService.VACATION
