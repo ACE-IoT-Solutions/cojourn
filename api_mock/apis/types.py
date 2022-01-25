@@ -1,5 +1,11 @@
 from enum import Enum
 
+class DemandResponseStatus(str, Enum):
+    NORMAL = 'normal'
+    CURTAILED = 'curtailed'
+    HEIGHTENED = 'heightened'
+    OPTED_OUT = 'opted_out'
+
 class DeviceStatus(str, Enum):
     ACTIVE = 'active'
     INACTIVE = 'inactive'

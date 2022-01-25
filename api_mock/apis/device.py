@@ -1,8 +1,11 @@
 from flask_jwt_extended.view_decorators import jwt_required
 from flask_restx import fields, Namespace, Resource
 from http import HTTPStatus
+
+import jwt
 from state import load_state, save_state
-from .types import DeviceStatus, ThermostatMode, WaterHeaterService, Weather, ChargeRate, DeviceService
+
+from .types import DemandResponseStatus, DeviceStatus, ThermostatMode, Weather, ChargeRate, ChargeService
 
 api = Namespace('devices', description='Device Operations')
 
@@ -13,15 +16,21 @@ device = api.model('Device', {
     'location': fields.String(required=True, description='The Device\'s Location'),
     'provisioned': fields.Boolean(required=True, description='The Device\'s Provisioned Status'),
     'status': fields.String(required=True, description='The Device\'s Status', enum=[status for status in DeviceStatus]),
+    'dr_status': fields.String(required=True, description='Demand Response Status', enum=[status for status in DemandResponseStatus]),
 
     # Thermostat
-    'current_temperature': fields.Fixed(decimals=2, required=False, description='Thermostat Current Temperature (C)'),
     'mode': fields.String(
         required=False, 
         enum=[mode for mode in ThermostatMode],
         description='Thermostat Current Mode'
     ),
-    'interior_temperature': fields.Fixed(decimals=2, required=False, description='Thermostat Interior Temperature (C)'),
+    'setpoint': fields.Fixed(decimals=2, required=False, description='Thermostat target temperature (C)'),
+    'setpoint_span': fields.Fixed(
+        decimals=2, 
+        required=False, 
+        description='Thermostat setpoint span (C)'
+    ),
+    'interior_temperature': fields.Fixed(decimals=2, required=False, description='Thermostat Current Temperature (C)'),
     'exterior_temperature': fields.Fixed(decimals=2, required=False, description='Thermostat Exterior Temperature (C)'),
     'exterior_weather': fields.String(
         required=False,
@@ -59,8 +68,24 @@ device = api.model('Device', {
 })
 
 class DeviceDAO(object):
+    def __thermostat_setpoint_span(self, mode: ThermostatMode):
+        return {
+            ThermostatMode.AUTO: 2,
+            ThermostatMode.HEAT: 2,
+            ThermostatMode.COOL: 2,
+            ThermostatMode.ECO: 4,
+            ThermostatMode.OFF: 0,
+        }[mode]
+
+    def __decorate_device(self, device):
+        if (device['type'] == 'thermostat'):
+            device_mode = ThermostatMode(device['mode'])
+            device['setpoint_span'] = self.__thermostat_setpoint_span(device_mode)
+
+        return device
+
     def __init__(self, devices=[]):
-        self.devices = devices
+        self.devices = list(map(self.__decorate_device, devices))
         
     def get_list(self):
         return self.devices
@@ -80,6 +105,7 @@ class DeviceDAO(object):
     def update(self, id, data):
         device = self.get(id)
         device.update(data)
+        device.update(self.__decorate_device(device))
         return device
 
     def delete(self, id):
@@ -122,7 +148,7 @@ class Device(Resource):
         '''get device by id'''
         return DAO.get(id), HTTPStatus.OK
     
-    @api.doc('update_device')
+    @api.doc('Update device')
     @api.expect(device)
     @api.marshal_with(device, envelope='device', code=HTTPStatus.OK)
     @jwt_required()
@@ -135,3 +161,32 @@ class Device(Resource):
         state["devices"] = DAO.get_list()
         save_state(state)
         return myDevice, HTTPStatus.OK
+
+
+temperature_params = api.model('TemperatureParams', {
+    'setpoint': fields.Fixed(decimals=2, required=False, description='Thermostat target temperature (C)'),
+    'mode': fields.String(
+        required=False, 
+        enum=[mode for mode in ThermostatMode],
+        description='Thermostat Current Mode'
+    )
+})
+
+@api.route('/<string:id>/temperature')
+class Device(Resource):
+    @api.expect(temperature_params)
+    @api.doc('Set thermostat temperature')
+    @jwt_required()
+    def post(self, id):
+        if (api.payload is None):
+            return 'No payload', HTTPStatus.BAD_REQUEST
+
+        device = DAO.get(id)
+        if (device['type'] != 'thermostat'):
+            return f'Cannot set temperature on {device.type}', HTTPStatus.BAD_REQUEST
+        
+        updatedDevice = DAO.update(id, api.payload)
+        state["devices"] = DAO.get_list()
+        save_state(state)
+        
+        return updatedDevice, HTTPStatus.OK
