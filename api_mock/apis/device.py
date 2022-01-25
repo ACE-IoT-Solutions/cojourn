@@ -19,8 +19,11 @@ device = api.model('Device', {
     'provisioned': fields.Boolean(required=True, description='The Device\'s Provisioned Status'),
     'status': fields.String(required=True, description='The Device\'s Status', enum=[status for status in DeviceStatus]),
     'dr_status': fields.String(required=True, description='Demand Response Status', enum=[status for status in DemandResponseStatus]),
+})
 
-    # Thermostat
+# create thermostat api model
+# Thermostat
+thermostat = api.inherit("Thermostat", device, {
     'mode': fields.String(
         required=False, 
         enum=[mode for mode in ThermostatMode],
