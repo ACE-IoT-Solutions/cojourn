@@ -66,8 +66,6 @@ pv_system = device_ns.model('List of Solar Panels', {
     'solar_panels': fields.List(fields.Nested(solar_panels))
     })
 
-# Water Heater
-
 # Home Battery
 home_battery = device_ns.inherit("Home Battery", device, {
     "reserve_limit": fields.Fixed(decimals=2, required=False, description='Home Battery Reserve Limit %'),
@@ -97,9 +95,13 @@ ev_charger = device_ns.inherit("EV Charger", device, {
     )})
 
 # Shared
-# 'label': Water Heater, Solar Panels
 water_heater = device_ns.inherit("Water Heater", device, {
     'label': fields.String(required=False, description='The Device\'s Status (deprecated)', enum=[status for status in DeviceStatus]),
+    'service': fields.String(
+        required=False,
+        enum=[service for service in DeviceService],
+        description='Service description'
+    ),
 })
                                
 

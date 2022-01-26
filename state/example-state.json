@@ -2832,6 +2832,7 @@
       "name": "Water Heater",
       "provisioned": true,
       "status": "active",
+      "service": "unlimited",
       "dr_status": "normal",
       "type": "water_heater"
     },
