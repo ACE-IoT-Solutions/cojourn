@@ -246,6 +246,31 @@ class DeviceDAO(object):
         device.update(self.__decorate_device(device))
         return device
 
+    def thermostat_setpoint_update(self, id, data):
+        device = self.get_by_type(id, "thermostat")
+        if data["mode"] not in ThermostatMode:
+            device_ns.abort(
+                HTTPStatus.BAD_REQUEST,
+                f"thermostat mode {data['mode']} is not valid",
+            )
+        device["mode"] = data["mode"]
+        device["setpoint"] = data["setpoint"]
+        device.update(device)
+        device.update(self.__decorate_device(device))
+        return device
+    
+    def ev_charge_rate_update(self, id, data):
+        device = self.get_by_type(id, "ev_charger")
+        if data["charge_rate"] not in ChargeRate:
+            device_ns.abort(
+                HTTPStatus.BAD_REQUEST,
+                f"ev charger charge rate {data['charge_rate']} is not valid",
+            )
+        device["charge_rate"] = data["charge_rate"]
+        device.update(device)
+        device.update(self.__decorate_device(device))
+        return device
+
     def delete(self, id):
         device = self.get(id)
         self.devices.remove(device)
@@ -426,7 +451,7 @@ class EVCharger(Resource):
         return myDevice, HTTPStatus.OK
 
 
-ev_charger_charge_rate = device_ns.model(
+ev_charge_rate = device_ns.model(
     "EV Charge Rate",
     {
         "charge_rate": fields.String(
@@ -443,7 +468,7 @@ class UpdateEVChargeRate(Resource):
     """Update EV Charger Charge Rate"""
 
     @device_ns.doc("update ev_charger charge rate")
-    @device_ns.expect(ev_charger_charge_rate)
+    @device_ns.expect(ev_charge_rate)
     @device_ns.marshal_with(ev_charger, envelope="ev_charger", code=HTTPStatus.OK)
     @jwt_required()
     def post(self, id):
@@ -451,7 +476,7 @@ class UpdateEVChargeRate(Resource):
         if device_ns.payload is None:
             return "No payload", HTTPStatus.BAD_REQUEST
 
-        myDevice = DAO.update(id, device_ns.payload)
+        myDevice = DAO.ev_charge_rate_update(id, device_ns.payload)
         state["devices"] = DAO.get_list()
         save_state(state)
         return myDevice, HTTPStatus.OK
@@ -546,7 +571,7 @@ class Device(Resource):
         if device["type"] != "thermostat":
             return f"Cannot set temperature on {device.type}", HTTPStatus.BAD_REQUEST
 
-        updatedDevice = DAO.update(id, device_ns.payload)
+        updatedDevice = DAO.thermostat_setpoint_update(id, device_ns.payload)
         state["devices"] = DAO.get_list()
         save_state(state)
 
