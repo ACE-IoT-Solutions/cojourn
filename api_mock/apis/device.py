@@ -7,11 +7,11 @@ from http import HTTPStatus
 import jwt
 from state import load_state, save_state
 
-from .types import DemandResponseStatus, DeviceStatus, DeviceService, ThermostatMode, Weather, ChargeRate
+from .types import DemandResponseStatus, DeviceStatus, DeviceService, ThermostatMode, Weather, ChargeRate, DeviceType
 
-api = Namespace('devices', description='Device Operations')
+device_ns = Namespace('devices', description='Device Operations')
 
-device = api.model('Device', {
+device = device_ns.model('Device', {
     'id': fields.String(required=True, description='The Device unique identifier'),
     'name': fields.String(required=True, description='The Device\'s Name'),
     'type': fields.String(required=True, description='The Device\'s Type'),
@@ -23,7 +23,7 @@ device = api.model('Device', {
 
 # create thermostat api model
 # Thermostat
-thermostat = api.inherit("Thermostat", device, {
+thermostat = device_ns.inherit("Thermostat", device, {
     'mode': fields.String(
         required=False, 
         enum=[mode for mode in ThermostatMode],
@@ -43,33 +43,33 @@ thermostat = api.inherit("Thermostat", device, {
         description='Weather description'
     )})
 
-generation_sample = api.model('Generation Sample', {
+generation_sample = device_ns.model('Generation Sample', {
     'name': fields.String(readOnly=True, description='The Device\'s Name'),
     'timestamp': fields.DateTime(readOnly=True, description='Timestamp of the sample'),
     'power_generated': fields.Fixed(readOnly=True, decimals=2, description='Power Generated (wH)'),
     'power_sent_to_grid': fields.Fixed(readonly=True, decimals=2, description='Power Sent to Grid (wH)'),
     })
 
-list_of_generation_samples = api.model('List of Generation Samples', {
+list_of_generation_samples = device_ns.model('List of Generation Samples', {
     'samples': fields.List(fields.Nested(generation_sample))
     })
 
 # Solar Panels
-solar_panels = api.inherit("Solar Panels", device, {
+solar_panels = device_ns.inherit("Solar Panels", device, {
     'label': fields.String(required=False, description='The Device\'s Status (deprecated)', enum=[status for status in DeviceStatus]),
     'power_generated_this_month': fields.Fixed(readOnly=True, decimals=2, description='Power Generated This Month (wH)'),
     'power_sent_to_grid_this_month': fields.Fixed(readOnly=True, decimals=2, description='Power Sent to Grid This Month (wH)'),
     'generation_samples': fields.Nested(list_of_generation_samples)
     })
 
-list_of_solar_panels = api.model('List of Solar Panels', {
+list_of_solar_panels = device_ns.model('List of Solar Panels', {
     'solar_panels': fields.List(fields.Nested(solar_panels))
     })
 
 # Water Heater
 
 # Home Battery
-home_battery = api.inherit("Home Battery", device, {
+home_battery = device_ns.inherit("Home Battery", device, {
     "reserve_limit": fields.Fixed(decimals=2, required=False, description='Home Battery Reserve Limit %'),
     'service': fields.String(
         required=False,
@@ -83,7 +83,7 @@ home_battery = api.inherit("Home Battery", device, {
         description='The Device\'s Charge Rate'
     )})
                            
-ev_charger = api.inherit("EV Charger", device, {
+ev_charger = device_ns.inherit("EV Charger", device, {
     'service': fields.String(
         required=False,
         enum=[service for service in DeviceService],
@@ -98,7 +98,7 @@ ev_charger = api.inherit("EV Charger", device, {
 
 # Shared
 # 'label': Water Heater, Solar Panels
-water_heater = api.inherit("Water Heater", device, {
+water_heater = device_ns.inherit("Water Heater", device, {
     'label': fields.String(required=False, description='The Device\'s Status (deprecated)', enum=[status for status in DeviceStatus]),
 })
                                
@@ -130,7 +130,13 @@ class DeviceDAO(object):
         for device in self.devices:
             if device['id'] == id:
                 return device
-        api.abort(HTTPStatus.NOT_FOUND, f"device {id} doesn't exist")
+        device_ns.abort(HTTPStatus.NOT_FOUND, f"device {id} doesn't exist")
+    
+    def get_by_type(self, id, type):
+        for device in self.devices:
+            if device['id'] == id and device['type'] == type:
+                return device
+        device_ns.abort(HTTPStatus.NOT_FOUND, f"device {id} doesn't exist or is not of type {type}")
 
     def create(self, data):
         device = data
@@ -144,6 +150,14 @@ class DeviceDAO(object):
         device.update(self.__decorate_device(device))
         return device
 
+    def update_by_type(self, id, data, type):
+        device = self.get(id)
+        if device['type'] != type:
+            device_ns.abort(HTTPStatus.NOT_FOUND, f"device {id} doesn't exist or is not of type {type}")
+        device.update(data)
+        device.update(self.__decorate_device(device))
+        return device
+
     def delete(self, id):
         device = self.get(id)
         self.devices.remove(device)  
@@ -151,88 +165,187 @@ class DeviceDAO(object):
 state = load_state()
 DAO = DeviceDAO(state.get("devices", []))
 
-@api.route('/')
+@device_ns.route('/')
 class DeviceList(Resource):
     '''Shows a list of all devices'''
-    @api.doc('list_devices')
-    @api.marshal_list_with(device, envelope='devices', skip_none=True)
+    @device_ns.doc('list_devices')
+    @device_ns.marshal_list_with(device, envelope='devices', skip_none=True)
     @jwt_required()
     def get(self):
         '''List all devices'''
         return DAO.get_list(), HTTPStatus.OK
 
 
-    @api.doc('create_device')
-    @api.expect(device)
-    @api.marshal_with(device, envelope='device', code=HTTPStatus.CREATED)
+    @device_ns.doc('create_device')
+    @device_ns.expect(device)
+    @device_ns.marshal_with(device, envelope='device', code=HTTPStatus.CREATED)
     @jwt_required()
     def post(self):
         '''Create a new device'''
-        myDevice = DAO.create(api.payload)
+        myDevice = DAO.create(device_ns.payload)
         state["devices"] = DAO.get_list()
         save_state(state)
         return myDevice, HTTPStatus.CREATED
 
 
-@api.route('/<string:id>')
+@device_ns.route('/<string:id>')
 class Device(Resource):
     '''Get device by id'''
-    @api.doc('get device by id')
-    @api.marshal_with(device, envelope='device', skip_none=True)
+    @device_ns.doc('get device by id')
+    # @device_ns.marshal_with(device, envelope='device', skip_none=True)
     @jwt_required()
     def get(self, id):
         '''get device by id'''
         return DAO.get(id), HTTPStatus.OK
     
-    @api.doc('Update device')
-    @api.expect(device)
-    @api.marshal_with(device, envelope='device', code=HTTPStatus.OK)
+    @device_ns.doc('Update device')
+    @device_ns.expect(device)
+    @device_ns.marshal_with(device, envelope='device', code=HTTPStatus.OK)
     @jwt_required()
     def patch(self, id):
         '''update device state'''
-        if (api.payload is None):
+        if (device_ns.payload is None):
             return 'No payload', HTTPStatus.BAD_REQUEST
 
-        myDevice = DAO.update(id, api.payload)
+        myDevice = DAO.update(id, device_ns.payload)
         state["devices"] = DAO.get_list()
         save_state(state)
         return myDevice, HTTPStatus.OK
-        
 
-@api.route('/solar-panels/generation')
-class DeviceType(Resource):
-    '''Get timeseries generatio ndata for solar panels'''
-    @api.doc('get timeseries generation data for solar panels')
-    @api.marshal_list_with(generation_sample, envelope='generation_samples', skip_none=True)
+@device_ns.route(f'/{DeviceType.THERMOSTAT}/<string:id>')
+class Thermostat(Resource):
+    '''Get Thermostat'''
+    @device_ns.doc('get thermostat by id')
+    @device_ns.marshal_with(thermostat, envelope=DeviceType.THERMOSTAT, skip_none=True)
     @jwt_required()
-    def get(self):
-        '''get timeseries generation data for solar panels'''
-        return self.get_timeseries(), HTTPStatus.OK
+    def get(self, id):
+        '''get thermostat by id'''
+        device = DAO.get(id)
+        if device.get('type') != DeviceType.THERMOSTAT:
+            device_ns.abort(HTTPStatus.BAD_REQUEST, f"device {id} is not a {DeviceType.THERMOSTAT}")
+        return device, HTTPStatus.OK
     
-    def get_timeseries(self):
-        devices = DAO.get_list()
-        solar_panels = (
-            [device for device in devices 
-             if device['type'].lower() == 'solar_panels' 
-             and device.get('generation_samples') is not None
-             and device.get('generation_samples') != []]
-            )
-        samples = []
-        
-        for device in solar_panels:
+    @device_ns.doc('Update thermostat')
+    @device_ns.expect(thermostat)
+    @device_ns.marshal_with(thermostat, envelope='thermostat', code=HTTPStatus.OK)
+    @jwt_required()
+    def patch(self, id):
+        '''update thermostat state'''
+        if (device_ns.payload is None):
+            return 'No payload', HTTPStatus.BAD_REQUEST
+
+        myDevice = DAO.update(id, device_ns.payload)
+        state["devices"] = DAO.get_list()
+        save_state(state)
+        return myDevice, HTTPStatus.OK
+    
+@device_ns.route('/water_heater/<string:id>')
+class WaterHeater(Resource):
+    '''Get Water Heater'''
+    @device_ns.doc('get water_heater by id')
+    @device_ns.marshal_with(water_heater, envelope='water_heater', skip_none=True)
+    @jwt_required()
+    def get(self, id):
+        '''get water_heater by id'''
+        device = DAO.get(id)
+        if device.get('type') != 'water_heater':
+            device_ns.abort(HTTPStatus.BAD_REQUEST, f"device {id} is not a water_heater")
+        return device, HTTPStatus.OK
+    
+    @device_ns.doc('Update water_heater')
+    @device_ns.expect(water_heater)
+    @device_ns.marshal_with(water_heater, envelope='water_heater', code=HTTPStatus.OK)
+    @jwt_required()
+    def patch(self, id):
+        '''update water_heater state'''
+        if (device_ns.payload is None):
+            return 'No payload', HTTPStatus.BAD_REQUEST
+
+        myDevice = DAO.update(id, device_ns.payload)
+        state["devices"] = DAO.get_list()
+        save_state(state)
+        return myDevice, HTTPStatus.OK
+
+@device_ns.route('/home_battery/<string:id>')
+class HomeBattery(Resource):
+    '''Get Home Battery'''
+    @device_ns.doc('get home_battery by id')
+    @device_ns.marshal_with(home_battery, envelope='home_battery', skip_none=True)
+    @jwt_required()
+    def get(self, id):
+        '''get home_battery by id'''
+        device = DAO.get(id)
+        if device.get('type') != 'home_battery':
+            device_ns.abort(HTTPStatus.BAD_REQUEST, f"device {id} is not a home_battery")
+        return device, HTTPStatus.OK
+    
+    @device_ns.doc('Update home_battery')
+    @device_ns.expect(home_battery)
+    @device_ns.marshal_with(home_battery, envelope='home_battery', code=HTTPStatus.OK)
+    @jwt_required()
+    def patch(self, id):
+        '''update home_battery state'''
+        if (device_ns.payload is None):
+            return 'No payload', HTTPStatus.BAD_REQUEST
+
+        myDevice = DAO.update(id, device_ns.payload)
+        state["devices"] = DAO.get_list()
+        save_state(state)
+        return myDevice, HTTPStatus.OK
+
+@device_ns.route('/ev_charger/<string:id>')
+class EVCharger(Resource):
+    '''Get EV Charger'''
+    @device_ns.doc('get ev_charger by id')
+    @device_ns.marshal_with(ev_charger, envelope='ev_charger', skip_none=True)
+    @jwt_required()
+    def get(self, id):
+        '''get ev_charger by id'''
+        device = DAO.get(id)
+        if device.get('type') != 'ev_charger':
+            device_ns.abort(HTTPStatus.BAD_REQUEST, f"device {id} is not a ev_charger")
+        return device, HTTPStatus.OK
+    
+    @device_ns.doc('Update ev_charger')
+    @device_ns.expect(ev_charger)
+    @device_ns.marshal_with(ev_charger, envelope='ev_charger', code=HTTPStatus.OK)
+    @jwt_required()
+    def patch(self, id):
+        '''update ev_charger state'''
+        if (device_ns.payload is None):
+            return 'No payload', HTTPStatus.BAD_REQUEST
+
+        myDevice = DAO.update(id, device_ns.payload)
+        state["devices"] = DAO.get_list()
+        save_state(state)
+        return myDevice, HTTPStatus.OK
+
+
+@device_ns.route('/solar-panels/<string:id>/generation')
+class SolarPanels(Resource):
+    '''Get timeseries generation data for solar panels'''
+    @device_ns.doc('get timeseries generation data for solar panels')
+    @device_ns.marshal_list_with(generation_sample, envelope='generation_samples', skip_none=True)
+    @jwt_required()
+    def get(self, id: str):
+        '''get timeseries generation data for solar panels'''
+        return self.get_timeseries(id)
+    
+    def get_timeseries(self, device_id: str):
+        device = DAO.get(device_id)
+        if device.get('generation_samples') != [] and device.get('generation_samples') is not None:
             device_samples = list(
                 map(
                     lambda sample: {"name": device["name"], **sample}, 
                     device['generation_samples']))
             
             if device_samples is not None and device_samples != []:
-                samples += device_samples
-        
-        return samples
+                return device_samples, HTTPStatus.OK
+        else:
+            return None, HTTPStatus.NOT_FOUND
+
             
-
-
-temperature_params = api.model('TemperatureParams', {
+temperature_params = device_ns.model('TemperatureParams', {
     'setpoint': fields.Fixed(decimals=2, required=False, description='Thermostat target temperature (C)'),
     'mode': fields.String(
         required=False, 
@@ -241,20 +354,20 @@ temperature_params = api.model('TemperatureParams', {
     )
 })
 
-@api.route('/<string:id>/temperature')
+@device_ns.route('/<string:id>/temperature')
 class Device(Resource):
-    @api.expect(temperature_params)
-    @api.doc('Set thermostat temperature')
+    @device_ns.expect(temperature_params)
+    @device_ns.doc('Set thermostat temperature')
     @jwt_required()
     def post(self, id):
-        if (api.payload is None):
+        if (device_ns.payload is None):
             return 'No payload', HTTPStatus.BAD_REQUEST
 
         device = DAO.get(id)
         if (device['type'] != 'thermostat'):
             return f'Cannot set temperature on {device.type}', HTTPStatus.BAD_REQUEST
         
-        updatedDevice = DAO.update(id, api.payload)
+        updatedDevice = DAO.update(id, device_ns.payload)
         state["devices"] = DAO.get_list()
         save_state(state)
         

@@ -1,5 +1,12 @@
 from enum import Enum
 
+
+class DeviceType(str, Enum):
+    WATER_HEATER = 'water_heater'
+    THERMOSTAT = 'thermostat'
+    HOME_BATTERY = 'home_battery'
+    EV_CHARGER = 'ev_charger'
+
 class DemandResponseStatus(str, Enum):
     NORMAL = 'normal'
     CURTAILED = 'curtailed'
