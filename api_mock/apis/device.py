@@ -55,15 +55,15 @@ list_of_generation_samples = device_ns.model('List of Generation Samples', {
     })
 
 # Solar Panels
-solar_panels = device_ns.inherit("Solar Panels", device, {
+pv_system = device_ns.inherit("Photovoltaic Systems", device, {
     'label': fields.String(required=False, description='The Device\'s Status (deprecated)', enum=[status for status in DeviceStatus]),
     'power_generated_this_month': fields.Fixed(readOnly=True, decimals=2, description='Power Generated This Month (wH)'),
     'power_sent_to_grid_this_month': fields.Fixed(readOnly=True, decimals=2, description='Power Sent to Grid This Month (wH)'),
     'generation_samples': fields.Nested(list_of_generation_samples)
     })
 
-pv_system = device_ns.model('List of Solar Panels', {
-    'solar_panels': fields.List(fields.Nested(solar_panels))
+pv_systems = device_ns.model('List of Photovoltaic Systems', {
+    'solar_panels': fields.List(fields.Nested(pv_system))
     })
 
 # Water Heater
@@ -381,7 +381,7 @@ temperature_params = device_ns.model('TemperatureParams', {
     )
 })
 
-@device_ns.route('/<string:id>/temperature')
+@device_ns.route(f'{DeviceType.THERMOSTAT}/<string:id>/update_setpoint')
 class Device(Resource):
     @device_ns.expect(temperature_params)
     @device_ns.doc('Set thermostat temperature')
