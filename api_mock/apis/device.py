@@ -14,7 +14,7 @@ device_ns = Namespace('devices', description='Device Operations')
 device = device_ns.model('Device', {
     'id': fields.String(required=True, description='The Device unique identifier'),
     'name': fields.String(required=True, description='The Device\'s Name'),
-    'type': fields.String(required=True, description='The Device\'s Type'),
+    'type': fields.String(required=True, enum=[device_type for device_type in DeviceType], description='The Device\'s Type'),
     'location': fields.String(required=True, description='The Device\'s Location'),
     'provisioned': fields.Boolean(required=True, description='The Device\'s Provisioned Status'),
     'status': fields.String(required=True, description='The Device\'s Status', enum=[status for status in DeviceStatus]),
@@ -266,7 +266,7 @@ class WaterHeater(Resource):
         save_state(state)
         return myDevice, HTTPStatus.OK
 
-@device_ns.route('/home_battery/<string:id>')
+@device_ns.route(f'/{DeviceType.HOME_BATTERY}/<string:id>')
 class HomeBattery(Resource):
     '''Get Home Battery'''
     @device_ns.doc('get home_battery by id')
@@ -275,7 +275,7 @@ class HomeBattery(Resource):
     def get(self, id):
         '''get home_battery by id'''
         device = DAO.get(id)
-        if device.get('type') != 'home_battery':
+        if device.get('type') != DeviceType.HOME_BATTERY:
             device_ns.abort(HTTPStatus.BAD_REQUEST, f"device {id} is not a home_battery")
         return device, HTTPStatus.OK
     
@@ -293,7 +293,7 @@ class HomeBattery(Resource):
         save_state(state)
         return myDevice, HTTPStatus.OK
 
-@device_ns.route('/ev_charger/<string:id>')
+@device_ns.route(f'/{DeviceType.EV_CHARGER}/<string:id>')
 class EVCharger(Resource):
     '''Get EV Charger'''
     @device_ns.doc('get ev_charger by id')
@@ -302,7 +302,7 @@ class EVCharger(Resource):
     def get(self, id):
         '''get ev_charger by id'''
         device = DAO.get(id)
-        if device.get('type') != 'ev_charger':
+        if device.get('type') != DeviceType.EV_CHARGER:
             device_ns.abort(HTTPStatus.BAD_REQUEST, f"device {id} is not a ev_charger")
         return device, HTTPStatus.OK
     
@@ -320,9 +320,36 @@ class EVCharger(Resource):
         save_state(state)
         return myDevice, HTTPStatus.OK
 
+@device_ns.route(f'/{DeviceType.PV_SYSTEM}/<string:id>')
+class PVSystem(Resource):
+    '''Get PV System'''
+    @device_ns.doc('get pv_system by id')
+    @device_ns.marshal_with(pv_system, envelope='pv_system', skip_none=True)
+    @jwt_required()
+    def get(self, id):
+        '''get pv_system by id'''
+        device = DAO.get(id)
+        if device.get('type') != DeviceType.PV_SYSTEM:
+            device_ns.abort(HTTPStatus.BAD_REQUEST, f"device {id} is not a pv_system")
+        return device, HTTPStatus.OK
+    
+    @device_ns.doc('Update pv_system')
+    @device_ns.expect(pv_system)
+    @device_ns.marshal_with(pv_system, envelope='pv_system', code=HTTPStatus.OK)
+    @jwt_required()
+    def patch(self, id):
+        '''update pv_system state'''
+        if (device_ns.payload is None):
+            return 'No payload', HTTPStatus.BAD_REQUEST
 
-@device_ns.route('/solar-panels/<string:id>/generation')
-class SolarPanels(Resource):
+        myDevice = DAO.update(id, device_ns.payload)
+        state["devices"] = DAO.get_list()
+        save_state(state)
+        return myDevice, HTTPStatus.OK
+
+
+@device_ns.route(f'/{DeviceType.PV_SYSTEM}/<string:id>/generation')
+class PVSystemGeneration(Resource):
     '''Get timeseries generation data for solar panels'''
     @device_ns.doc('get timeseries generation data for solar panels')
     @device_ns.marshal_list_with(generation_sample, envelope='generation_samples', skip_none=True)

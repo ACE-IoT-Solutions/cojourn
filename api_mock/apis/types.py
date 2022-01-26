@@ -6,6 +6,7 @@ class DeviceType(str, Enum):
     THERMOSTAT = 'thermostat'
     HOME_BATTERY = 'home_battery'
     EV_CHARGER = 'ev_charger'
+    PV_SYSTEM = 'pv_system'
 
 class DemandResponseStatus(str, Enum):
     NORMAL = 'normal'
