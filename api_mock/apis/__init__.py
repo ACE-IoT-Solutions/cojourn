@@ -1,7 +1,7 @@
 from flask import Blueprint
 from flask_restx import Api
 
-from .device import api as device_ns
+from .device import device_ns as device_ns
 from .hems import api as hems_ns
 from .user import api as user_ns
 from .auth import api as auth_ns
