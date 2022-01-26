@@ -62,7 +62,7 @@ solar_panels = device_ns.inherit("Solar Panels", device, {
     'generation_samples': fields.Nested(list_of_generation_samples)
     })
 
-list_of_solar_panels = device_ns.model('List of Solar Panels', {
+pv_system = device_ns.model('List of Solar Panels', {
     'solar_panels': fields.List(fields.Nested(solar_panels))
     })
 
