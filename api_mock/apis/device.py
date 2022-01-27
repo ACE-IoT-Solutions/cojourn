@@ -125,8 +125,6 @@ pv_systems = device_ns.model(
     {"solar_panels": fields.List(fields.Nested(pv_system))},
 )
 
-# Water Heater
-
 # Home Battery
 home_battery = device_ns.inherit(
     "Home Battery",
@@ -172,18 +170,15 @@ ev_charger = device_ns.inherit(
 )
 
 # Shared
-# 'label': Water Heater, Solar Panels
-water_heater = device_ns.inherit(
-    "Water Heater",
-    device,
-    {
-        "label": fields.String(
-            required=False,
-            description="The Device's Status (deprecated)",
-            enum=[status for status in DeviceStatus],
-        ),
-    },
-)
+water_heater = device_ns.inherit("Water Heater", device, {
+    'label': fields.String(required=False, description='The Device\'s Status (deprecated)', enum=[status for status in DeviceStatus]),
+    'service': fields.String(
+        required=False,
+        enum=[service for service in DeviceService],
+        description='Service description'
+    ),
+})
+                               
 
 
 class DeviceDAO(object):
