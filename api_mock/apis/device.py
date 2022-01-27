@@ -553,7 +553,7 @@ temperature_params = device_ns.model(
 )
 
 
-@device_ns.route(f"{DeviceType.THERMOSTAT}/<string:id>/update_setpoint")
+@device_ns.route(f"/{DeviceType.THERMOSTAT}/<string:id>/update_setpoint")
 class Device(Resource):
     @device_ns.expect(temperature_params)
     @device_ns.doc("Set thermostat temperature")
