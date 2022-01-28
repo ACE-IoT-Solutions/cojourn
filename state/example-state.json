@@ -2852,6 +2852,7 @@
   ],
   "home": {
     "id": "a5e197aa-fa13-4255-b395-63268be12842",
+    "provisioned": true,
     "lpc_config": {
       "name": "littleBig LPC",
       "status_communication": true,
