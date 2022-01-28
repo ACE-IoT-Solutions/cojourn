@@ -170,15 +170,22 @@ ev_charger = device_ns.inherit(
 )
 
 # Shared
-water_heater = device_ns.inherit("Water Heater", device, {
-    'label': fields.String(required=False, description='The Device\'s Status (deprecated)', enum=[status for status in DeviceStatus]),
-    'service': fields.String(
-        required=False,
-        enum=[service for service in DeviceService],
-        description='Service description'
-    ),
-})
-                               
+water_heater = device_ns.inherit(
+    "Water Heater",
+    device,
+    {
+        "label": fields.String(
+            required=False,
+            description="The Device's Status (deprecated)",
+            enum=[status for status in DeviceStatus],
+        ),
+        "service": fields.String(
+            required=False,
+            enum=[service for service in DeviceService],
+            description="Service description",
+        ),
+    },
+)
 
 
 class DeviceDAO(object):
@@ -253,7 +260,7 @@ class DeviceDAO(object):
         device.update(device)
         device.update(self.__decorate_device(device))
         return device
-    
+
     def ev_charge_rate_update(self, id, data):
         device = self.get_by_type(id, "ev_charger")
         if data["charge_rate"] not in ChargeRate:
@@ -271,6 +278,13 @@ class DeviceDAO(object):
             if "dr_status" in device:
                 device["dr_status"] = status
         return self.devices
+
+    def home_battery_reserve_limit_update(self, id, data):
+        device = self.get_by_type(id, "home_battery")
+        device["reserve_limit"] = data["reserve_limit"]
+        device.update(device)
+        device.update(self.__decorate_device(device))
+        return device
 
     def delete(self, id):
         device = self.get(id)
@@ -423,6 +437,30 @@ class HomeBattery(Resource):
         return myDevice, HTTPStatus.OK
 
 
+home_battery_reserve_limit = device_ns.model(
+    "HomeBatteryReserveLimit", {"reserve_limit": fields.Integer}
+)
+
+
+@device_ns.route(f"/{DeviceType.HOME_BATTERY}/<string:id>/update_reserve_limit")
+class HomeBatteryReserveLimit(Resource):
+    """Update Home Battery Reserve Limit"""
+
+    @device_ns.doc("update home_battery reserve limit")
+    @device_ns.expect(home_battery_reserve_limit)
+    @device_ns.marshal_with(home_battery, envelope="home_battery", code=HTTPStatus.OK)
+    @jwt_required()
+    def post(self, id):
+        """update home_battery reserve limit"""
+        if device_ns.payload is None:
+            return "No payload", HTTPStatus.BAD_REQUEST
+
+        updated_device = DAO.home_battery_reserve_limit_update(id, device_ns.payload)
+        state["devices"] = DAO.get_list()
+        save_state(state)
+        return updated_device, HTTPStatus.OK
+
+
 @device_ns.route(f"/{DeviceType.EV_CHARGER}/<string:id>")
 class EVCharger(Resource):
     """Get EV Charger"""
@@ -453,7 +491,7 @@ class EVCharger(Resource):
 
 
 ev_charge_rate = device_ns.model(
-    "EV Charge Rate",
+    "EVChargeRate",
     {
         "charge_rate": fields.String(
             required=True,
