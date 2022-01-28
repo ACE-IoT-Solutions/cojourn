@@ -265,6 +265,12 @@ class DeviceDAO(object):
         device.update(device)
         device.update(self.__decorate_device(device))
         return device
+    
+    def set_all_der_status(self, status):
+        for device in self.devices:
+            if "dr_status" in device:
+                device["dr_status"] = status
+        return self.devices
 
     def delete(self, id):
         device = self.get(id)
