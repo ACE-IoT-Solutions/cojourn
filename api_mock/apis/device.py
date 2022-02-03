@@ -3,6 +3,7 @@ from random import sample
 from flask_jwt_extended.view_decorators import jwt_required
 from flask_restx import fields, Namespace, Resource
 from http import HTTPStatus
+import time
 
 import jwt
 from state import load_state, save_state
@@ -250,7 +251,7 @@ class DeviceDAO(object):
 
     def thermostat_setpoint_update(self, id, data):
         device = self.get_by_type(id, "thermostat")
-        if data["mode"] not in ThermostatMode:
+        if data["mode"] not in set(mode.value for mode in ThermostatMode):
             device_ns.abort(
                 HTTPStatus.BAD_REQUEST,
                 f"thermostat mode {data['mode']} is not valid",
@@ -263,7 +264,8 @@ class DeviceDAO(object):
 
     def ev_charge_rate_update(self, id, data):
         device = self.get_by_type(id, "ev_charger")
-        if data["charge_rate"] not in ChargeRate:
+        
+        if data["charge_rate"] not in set(charge_rate.value for charge_rate in ChargeRate):
             device_ns.abort(
                 HTTPStatus.BAD_REQUEST,
                 f"ev charger charge rate {data['charge_rate']} is not valid",
@@ -292,6 +294,7 @@ class DeviceDAO(object):
 
 
 state = load_state()
+print(state)
 DAO = DeviceDAO(state.get("devices", []))
 
 
@@ -455,6 +458,7 @@ class HomeBatteryReserveLimit(Resource):
         if device_ns.payload is None:
             return "No payload", HTTPStatus.BAD_REQUEST
 
+        time.sleep(1)
         updated_device = DAO.home_battery_reserve_limit_update(id, device_ns.payload)
         state["devices"] = DAO.get_list()
         save_state(state)
@@ -515,6 +519,8 @@ class UpdateEVChargeRate(Resource):
         if device_ns.payload is None:
             return "No payload", HTTPStatus.BAD_REQUEST
 
+        print("Got device")
+        # print(id)
         myDevice = DAO.ev_charge_rate_update(id, device_ns.payload)
         state["devices"] = DAO.get_list()
         save_state(state)
