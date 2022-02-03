@@ -3,7 +3,6 @@ from random import sample
 from flask_jwt_extended.view_decorators import jwt_required
 from flask_restx import fields, Namespace, Resource
 from http import HTTPStatus
-import time
 
 import jwt
 from state import load_state, save_state
