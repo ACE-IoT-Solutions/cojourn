@@ -294,7 +294,6 @@ class DeviceDAO(object):
 
 
 state = load_state()
-print(state)
 DAO = DeviceDAO(state.get("devices", []))
 
 
@@ -458,7 +457,6 @@ class HomeBatteryReserveLimit(Resource):
         if device_ns.payload is None:
             return "No payload", HTTPStatus.BAD_REQUEST
 
-        time.sleep(1)
         updated_device = DAO.home_battery_reserve_limit_update(id, device_ns.payload)
         state["devices"] = DAO.get_list()
         save_state(state)
@@ -519,8 +517,6 @@ class UpdateEVChargeRate(Resource):
         if device_ns.payload is None:
             return "No payload", HTTPStatus.BAD_REQUEST
 
-        print("Got device")
-        # print(id)
         myDevice = DAO.ev_charge_rate_update(id, device_ns.payload)
         state["devices"] = DAO.get_list()
         save_state(state)
