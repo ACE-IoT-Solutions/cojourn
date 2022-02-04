@@ -2,7 +2,7 @@
   "device": {
     "id": "f8204550-32cc-44aa-bf48-a95a90c1504f",
     "name": "Linda's Charger",
-    "type": "car_charger",
+    "type": "ev_charger",
     "location": "Living Room",
     "status": "active",
     "dr_status": "normal",

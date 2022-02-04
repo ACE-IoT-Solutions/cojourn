@@ -250,7 +250,7 @@ class DeviceDAO(object):
 
     def thermostat_setpoint_update(self, id, data):
         device = self.get_by_type(id, "thermostat")
-        if data["mode"] not in ThermostatMode:
+        if data["mode"] not in set(mode.value for mode in ThermostatMode):
             device_ns.abort(
                 HTTPStatus.BAD_REQUEST,
                 f"thermostat mode {data['mode']} is not valid",
@@ -263,7 +263,8 @@ class DeviceDAO(object):
 
     def ev_charge_rate_update(self, id, data):
         device = self.get_by_type(id, "ev_charger")
-        if data["charge_rate"] not in ChargeRate:
+        
+        if data["charge_rate"] not in set(charge_rate.value for charge_rate in ChargeRate):
             device_ns.abort(
                 HTTPStatus.BAD_REQUEST,
                 f"ev charger charge rate {data['charge_rate']} is not valid",
