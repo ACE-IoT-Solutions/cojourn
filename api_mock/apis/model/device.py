@@ -1,23 +1,8 @@
-import json
-from random import sample
-from flask_jwt_extended.view_decorators import jwt_required
-from flask_restx import fields, Namespace, Resource
-from http import HTTPStatus
-
-import jwt
-from state import load_state, save_state
-
 from api_mock.apis.namespace import device_ns
-from api_mock.apis.types import (
-    DemandResponseStatus,
-    DeviceStatus,
-    DeviceService,
-    ThermostatMode,
-    Weather,
-    ChargeRate,
-    DeviceType,
-)
-
+from api_mock.apis.types import (ChargeRate, DemandResponseStatus,
+                                 DeviceService, DeviceStatus, DeviceType,
+                                 ThermostatMode, Weather)
+from flask_restx import fields
 
 device = device_ns.model(
     "Device",

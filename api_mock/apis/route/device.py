@@ -1,32 +1,15 @@
-import json
-from random import sample
-from flask_jwt_extended.view_decorators import jwt_required
-from flask_restx import fields, Namespace, Resource
 from http import HTTPStatus
 
-import jwt
 from api_mock.apis.dao.device_dao import DeviceDAO
-from api_mock.apis.model.device import (
-    device,
-    thermostat,
-    water_heater,
-    home_battery,
-    ev_charger,
-    pv_system,
-    generation_sample
-    )
+from api_mock.apis.model.device import (device, ev_charger, generation_sample,
+                                        home_battery, pv_system, thermostat,
+                                        water_heater)
+from api_mock.apis.namespace import device_ns
+from api_mock.apis.types import ChargeRate, DeviceType, ThermostatMode
+from flask_jwt_extended.view_decorators import jwt_required
+from flask_restx import Resource, fields
 from state import load_state, save_state
 
-from api_mock.apis.types import (
-    DemandResponseStatus,
-    DeviceStatus,
-    DeviceService,
-    ThermostatMode,
-    Weather,
-    ChargeRate,
-    DeviceType,
-)
-from api_mock.apis.namespace import device_ns
 
 state = load_state()
 DAO = DeviceDAO(state.get("devices", []))

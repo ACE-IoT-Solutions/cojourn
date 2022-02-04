@@ -1,12 +1,10 @@
+from api_mock.apis.route.auth import auth_ns
+from api_mock.apis.route.device import device_ns
+from api_mock.apis.route.hems import hems_ns
+from api_mock.apis.route.home import home_ns
+from api_mock.apis.route.user import user_ns
 from flask import Blueprint
 from flask_restx import Api
-
-from .device import device_ns as device_ns
-from .hems import hems_ns as hems_ns
-from .user import api as user_ns
-from .auth import api as auth_ns
-from .home import api as home_ns
-
 
 api_blueprint = Blueprint("api", __name__, url_prefix="/api/v1")
 authorizations = {
@@ -16,13 +14,13 @@ authorizations = {
         "name": "Authorization"
     }
 }
-api = Api(api_blueprint, 
-          authorizations=authorizations, 
+api = Api(api_blueprint,
+          authorizations=authorizations,
           security="apikey",
-          version='0.0.1', 
+          version='0.0.1',
           title='Cojourn API Mock',
           description='API Mock for testing Cojourn'
-    )
+          )
 
 api.add_namespace(device_ns)
 api.add_namespace(hems_ns)

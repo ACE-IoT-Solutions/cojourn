@@ -1,15 +1,17 @@
-from flask_jwt_extended.view_decorators import jwt_required
-from flask_restx import fields, Namespace, Resource
 from http import HTTPStatus
-from state import load_state, save_state
-from operator import itemgetter
-from api_mock.apis.model.home import home
+
 from api_mock.apis.dao.home_dao import HomeDAO
+from api_mock.apis.model.home import home
 from api_mock.apis.namespace import home_ns
+from flask_jwt_extended.view_decorators import jwt_required
+from flask_restx import Resource
+from state import load_state, save_state
+
 
 state = load_state()
 DAO = HomeDAO(state.get("home", None))
-print("loading home routes")
+
+
 @home_ns.route('/')
 class Home(Resource):
     @home_ns.doc('create_home')
@@ -22,6 +24,7 @@ class Home(Resource):
         state["home"] = DAO.get()
         save_state(state)
         return myDevice, HTTPStatus.CREATED
+
 
 @home_ns.route('/config')
 class Config(Resource):

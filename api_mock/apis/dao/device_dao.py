@@ -1,22 +1,7 @@
-import json
-from random import sample
-from flask_jwt_extended.view_decorators import jwt_required
-from flask_restx import fields, Namespace, Resource
 from http import HTTPStatus
 
-import jwt
-from state import load_state, save_state
 from api_mock.apis.namespace import device_ns
-
-from api_mock.apis.types import (
-    DemandResponseStatus,
-    DeviceStatus,
-    DeviceService,
-    ThermostatMode,
-    Weather,
-    ChargeRate,
-    DeviceType,
-)
+from api_mock.apis.types import (ChargeRate, ThermostatMode)
 
 
 class DeviceDAO(object):
@@ -32,7 +17,8 @@ class DeviceDAO(object):
     def __decorate_device(self, device):
         if device["type"] == "thermostat":
             device_mode = ThermostatMode(device["mode"])
-            device["setpoint_span"] = self.__thermostat_setpoint_span(device_mode)
+            device["setpoint_span"] = self.__thermostat_setpoint_span(
+                device_mode)
 
         return device
 
@@ -94,7 +80,7 @@ class DeviceDAO(object):
 
     def ev_charge_rate_update(self, id, data):
         device = self.get_by_type(id, "ev_charger")
-        
+
         if data["charge_rate"] not in set(charge_rate.value for charge_rate in ChargeRate):
             device_ns.abort(
                 HTTPStatus.BAD_REQUEST,
@@ -104,7 +90,7 @@ class DeviceDAO(object):
         device.update(device)
         device.update(self.__decorate_device(device))
         return device
-    
+
     def set_all_der_status(self, status):
         for device in self.devices:
             if "dr_status" in device:
