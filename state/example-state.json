@@ -24,7 +24,7 @@
       "provisioned": true,
       "status": "active",
       "dr_status": "normal",
-      "type": "car_charger",
+      "type": "ev_charger",
       "service": "unlimited"
     },
     {
