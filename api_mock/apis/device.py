@@ -46,6 +46,17 @@ device = device_ns.model(
     },
 )
 
+device_der_status = device_ns.model(
+    "DeviceDerStatus",
+    {
+        "status": fields.String(
+            required=True,
+            enum=[status for status in DemandResponseStatus],
+            description="The Device's DER Status"
+        )
+    }
+)
+
 # create thermostat api model
 # Thermostat
 thermostat = device_ns.inherit(
@@ -274,6 +285,11 @@ class DeviceDAO(object):
         device.update(self.__decorate_device(device))
         return device
     
+    def set_der_status(self, id, status):
+        device = self.get(id)
+        device["dr_status"] = status
+        return device
+
     def set_all_der_status(self, status):
         for device in self.devices:
             if "dr_status" in device:
@@ -344,6 +360,19 @@ class Device(Resource):
         save_state(state)
         return myDevice, HTTPStatus.OK
 
+@device_ns.route("/<string:id>/set_der_status")
+class Device(Resource):
+    @device_ns.doc("Update device DR status")
+    @device_ns.expect(device_der_status)
+    @jwt_required()
+    def post(self, id):
+        if device_ns.payload is None:
+            return "No payload", HTTPStatus.BAD_REQUEST
+
+        myDevice = DAO.set_der_status(id, device_ns.payload["status"])
+        state["devices"] = DAO.get_list()
+        save_state(state)
+        return myDevice, HTTPStatus.OK
 
 @device_ns.route(f"/{DeviceType.THERMOSTAT}/<string:id>")
 class Thermostat(Resource):
