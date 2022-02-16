@@ -14,55 +14,58 @@ hems_ns = Namespace('hems', description='HEMS Operations')
 hems = hems_ns.model('HEMS', {
     'id': fields.String(readonly=True, description='The HEMS unique identifier'),
     'provisioned': fields.Boolean(required=True, description='The HEMS\'s Provisioned Status'),
+    'dr_status': fields.String(
+        required=True, 
+        description="Demand Response Status",
+        enum=[status for status in DemandResponseStatus]
+    )
 })
 
 hems_der_status = hems_ns.model('HemsDerStatus', {"status": fields.String(required=True, enum=[status for status in DemandResponseStatus], description='The HEMS\'s Der Status')})
 
 class HEMSDAO(object):
-    def __init__(self, home=None):
-        self.home = home
+    def __init__(self, hems=None):
+        self.hems = hems
         self.tokens = []
        
     def get(self):
-        if self.home is None:
-            hems_ns.abort(HTTPStatus.NOT_FOUND, f"home doesn't exist")    
-        return self.home
+        if self.hems is None:
+            hems_ns.abort(HTTPStatus.NOT_FOUND, f"HEMS doesn't exist")    
+        return self.hems
     
     def get_id(self, id):
-        if self.home["id"] != id:
-            hems_ns.abort(HTTPStatus.NOT_FOUND, f"home with id {id} doesn't exist")
-        return self.home
+        if self.hems["id"] != id:
+            hems_ns.abort(HTTPStatus.NOT_FOUND, f"HEMS with id {id} doesn't exist")
+        return self.hems
 
     def create(self, data):
-        self.home = data
-        return self.home
+        self.hems = data
+        return self.hems
 
     def update(self, data):
-        self.home.update(data)
-        return self.home
+        self.hems.update(data)
+        return self.hems
 
     def set_der_status(self, id, status):
-        if self.home["id"] != id:
-            hems_ns.abort(HTTPStatus.NOT_FOUND, f"home with id {id} doesn't exist")
-        return device_DAO.set_all_der_status(status)
+        if self.hems["id"] != id:
+            hems_ns.abort(HTTPStatus.NOT_FOUND, f"HEMS with id {id} doesn't exist")
         
+        self.hems.dr_status = status
+        return device_DAO.set_all_der_status(status)
 
     def delete(self):
-        self.home = None
-
-    
+        self.hems = None
 
 state = load_state()
-DAO = HEMSDAO(state.get("home", None))
+DAO = HEMSDAO(state.get("hems", {}))
 
 @hems_ns.route('/')
 class HEMS(Resource):
-    '''Shows a list of all todos, and lets you POST to add new tasks'''
-    @hems_ns.doc('list_hems')
+    @hems_ns.doc('get_hems')
     @hems_ns.marshal_list_with(hems)
     @jwt_required()
     def get(self):
-        '''List all tasks'''
+        '''Get HEMS Config'''
         return DAO.get(), HTTPStatus.OK
 
 @hems_ns.route('/<string:id>/set_der_status')
@@ -73,10 +76,14 @@ class HEMSDERStatus(Resource):
     @jwt_required()
     def post(self, id):
         '''Set the HEMS\'s Der Status'''
-        if id == DAO.get()["id"]:
-            devices = DAO.set_der_status(id, hems_ns.payload["status"])
-            state["devices"] = devices
+        hems = DAO.get()
+        if id == hems["id"]:
+            status = hems_ns.payload["status"]
+            hems["dr_status"] = status
+            state["hems"] = hems
+            state["devices"] = device_DAO.set_all_der_status(status)
             save_state(state)
+
             return DAO.get(), HTTPStatus.OK
 
 
