@@ -2850,6 +2850,11 @@
       "service": "unlimited"
     }
   ],
+  "hems": {
+    "id": "a5e197aa-fa13-4255-b395-63268be12842",
+    "provisioned": true,
+    "dr_status": "normal"
+  },
   "home": {
     "id": "a5e197aa-fa13-4255-b395-63268be12842",
     "provisioned": true,
