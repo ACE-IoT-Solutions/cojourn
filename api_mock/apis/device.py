@@ -303,6 +303,19 @@ class DeviceDAO(object):
         device.update(self.__decorate_device(device))
         return device
 
+    def home_battery_charge_rate_update(self, id, data):
+        device = self.get_by_type(id, "home_battery")
+        
+        if data["charge_rate"] not in set(charge_rate.value for charge_rate in ChargeRate):
+            device_ns.abort(
+                HTTPStatus.BAD_REQUEST,
+                f"home battery charge rate {data['charge_rate']} is not valid",
+            )
+        device["charge_rate"] = data["charge_rate"]
+        device.update(device)
+        device.update(self.__decorate_device(device))
+        return device
+
     def delete(self, id):
         device = self.get(id)
         self.devices.remove(device)
@@ -471,7 +484,6 @@ home_battery_reserve_limit = device_ns.model(
     "HomeBatteryReserveLimit", {"reserve_limit": fields.Integer}
 )
 
-
 @device_ns.route(f"/{DeviceType.HOME_BATTERY}/<string:id>/update_reserve_limit")
 class HomeBatteryReserveLimit(Resource):
     """Update Home Battery Reserve Limit"""
@@ -490,6 +502,34 @@ class HomeBatteryReserveLimit(Resource):
         save_state(state)
         return updated_device, HTTPStatus.OK
 
+home_battery_charge_rate = device_ns.model(
+    "HomeBatteryChargeRate",
+    {
+        "charge_rate": fields.String(
+            required=True,
+            enum=[val for val in ChargeRate],
+            description="Home Battery charge rate",
+        )
+    },
+)
+
+@device_ns.route(f"/{DeviceType.HOME_BATTERY}/<string:id>/update_charge_rate")
+class UpdateHomeBatteryChargeRate(Resource):
+    """Update Home Battery Charge Rate"""
+
+    @device_ns.doc("update home_battery charge rate")
+    @device_ns.expect(home_battery_charge_rate)
+    @device_ns.marshal_with(ev_charger, envelope="home_battery", code=HTTPStatus.OK)
+    @jwt_required()
+    def post(self, id):
+        """update home_battery_charger charge rate"""
+        if device_ns.payload is None:
+            return "No payload", HTTPStatus.BAD_REQUEST
+
+        myDevice = DAO.home_battery_charge_rate_update(id, device_ns.payload)
+        state["devices"] = DAO.get_list()
+        save_state(state)
+        return myDevice, HTTPStatus.OK
 
 @device_ns.route(f"/{DeviceType.EV_CHARGER}/<string:id>")
 class EVCharger(Resource):
@@ -549,7 +589,6 @@ class UpdateEVChargeRate(Resource):
         state["devices"] = DAO.get_list()
         save_state(state)
         return myDevice, HTTPStatus.OK
-
 
 @device_ns.route(f"/{DeviceType.PV_SYSTEM}/<string:id>")
 class PVSystem(Resource):
