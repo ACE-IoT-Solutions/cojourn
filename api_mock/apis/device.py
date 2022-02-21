@@ -484,13 +484,11 @@ class WaterHeaterPowerUsage(Resource):
 
     def get_timeseries(self, device_id: str):
         device = DAO.get(device_id)
-        print("yoooooooo")
         print(device)
         if (
             device.get("usage_samples") != []
             and device.get("usage_samples") is not None
         ):
-            print("yoooooooo!")
             device_samples = list(
                 map(
                     lambda sample: {"name": device["name"], **sample},
