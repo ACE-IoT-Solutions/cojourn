@@ -3,7 +3,7 @@ from random import sample
 from flask_jwt_extended.view_decorators import jwt_required
 from flask_restx import fields, Namespace, Resource
 from http import HTTPStatus
-
+from time import sleep
 import jwt
 from state import load_state, save_state
 
@@ -180,7 +180,25 @@ ev_charger = device_ns.inherit(
     },
 )
 
-# Shared
+
+usage_sample = device_ns.model(
+    "Usage Sample",
+    {
+        "name": fields.String(readOnly=True, description="The Device's Name"),
+        "timestamp": fields.DateTime(
+            readOnly=True, description="Timestamp of the sample"
+        ),
+        "power_used": fields.Fixed(
+            readOnly=True, decimals=2, description="Power Used (wH)"
+        ),
+    },
+)
+
+list_of_usage_samples = device_ns.model(
+    "List of Usage Samples",
+    {"samples": fields.List(fields.Nested(usage_sample))},
+)
+
 water_heater = device_ns.inherit(
     "Water Heater",
     device,
@@ -195,9 +213,9 @@ water_heater = device_ns.inherit(
             enum=[service for service in DeviceService],
             description="Service description",
         ),
+        "usage_samples": fields.Nested(list_of_usage_samples),
     },
 )
-
 
 class DeviceDAO(object):
     def __thermostat_setpoint_span(self, mode: ThermostatMode):
@@ -305,7 +323,7 @@ class DeviceDAO(object):
 
     def home_battery_charge_rate_update(self, id, data):
         device = self.get_by_type(id, "home_battery")
-        
+        sleep(1)
         if data["charge_rate"] not in set(charge_rate.value for charge_rate in ChargeRate):
             device_ns.abort(
                 HTTPStatus.BAD_REQUEST,
@@ -357,7 +375,9 @@ class Device(Resource):
     @jwt_required()
     def get(self, id):
         """get device by id"""
+        sleep(1)
         return DAO.get(id), HTTPStatus.OK
+
 
     @device_ns.doc("Update device")
     @device_ns.expect(device)
@@ -397,6 +417,7 @@ class Thermostat(Resource):
     def get(self, id):
         """get thermostat by id"""
         device = DAO.get(id)
+        sleep(1)
         if device.get("type") != DeviceType.THERMOSTAT:
             device_ns.abort(
                 HTTPStatus.BAD_REQUEST, f"device {id} is not a {DeviceType.THERMOSTAT}"
@@ -448,6 +469,39 @@ class WaterHeater(Resource):
         save_state(state)
         return myDevice, HTTPStatus.OK
 
+@device_ns.route(f"/{DeviceType.WATER_HEATER}/<string:id>/usage")
+class WaterHeaterPowerUsage(Resource):
+    """Get timeseries usage data for Water Heater"""
+
+    @device_ns.doc("get timeseries usage data for Water Heater")
+    @device_ns.marshal_list_with(
+        usage_sample, envelope="usage_samples", skip_none=True
+    )
+    @jwt_required()
+    def get(self, id: str):
+        """get timeseries usage data for Water Heater"""
+        return self.get_timeseries(id)
+
+    def get_timeseries(self, device_id: str):
+        device = DAO.get(device_id)
+        print("yoooooooo")
+        print(device)
+        if (
+            device.get("usage_samples") != []
+            and device.get("usage_samples") is not None
+        ):
+            print("yoooooooo!")
+            device_samples = list(
+                map(
+                    lambda sample: {"name": device["name"], **sample},
+                    device["usage_samples"],
+                )
+            )
+
+            if device_samples is not None and device_samples != []:
+                return device_samples, HTTPStatus.OK
+        else:
+            return None, HTTPStatus.NOT_FOUND
 
 @device_ns.route(f"/{DeviceType.HOME_BATTERY}/<string:id>")
 class HomeBattery(Resource):
@@ -526,6 +580,7 @@ class UpdateHomeBatteryChargeRate(Resource):
         if device_ns.payload is None:
             return "No payload", HTTPStatus.BAD_REQUEST
 
+        print("Update battery charge rate", device_ns.payload)
         myDevice = DAO.home_battery_charge_rate_update(id, device_ns.payload)
         state["devices"] = DAO.get_list()
         save_state(state)
