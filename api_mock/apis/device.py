@@ -6,6 +6,7 @@ from http import HTTPStatus
 from time import sleep
 import jwt
 from state import load_state, save_state
+from datetime import datetime
 
 from .types import (
     DemandResponseStatus,
@@ -685,16 +686,33 @@ class PVSystemGeneration(Resource):
         """get timeseries generation data for solar panels"""
         return self.get_timeseries(id)
 
+    
+    def shift_generation_sample(self, sample: dict) -> dict:
+        now = datetime.now()
+        now = now.replace(minute=0, second=0, microsecond=0)
+        sample_ts = datetime.fromisoformat(sample["timestamp"])
+        new_ts = sample_ts.replace(
+            year=now.year,
+            month=now.month,
+            day=now.day
+            )
+        if new_ts.hour > now.hour:
+            new_ts = new_ts.replace(day=now.day - 1)
+        
+        sample["timestamp"] = new_ts
+        return sample
+    
     def get_timeseries(self, device_id: str):
         device = DAO.get(device_id)
         if (
             device.get("generation_samples") != []
             and device.get("generation_samples") is not None
         ):
+        
             device_samples = list(
                 map(
-                    lambda sample: {"name": device["name"], **sample},
-                    device["generation_samples"],
+                    lambda sample: self.shift_generation_sample(sample),
+                    device["generation_samples"]
                 )
             )
 
