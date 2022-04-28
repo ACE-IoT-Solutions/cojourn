@@ -1,0 +1,2 @@
+class UserDAO(object):
+    pass
