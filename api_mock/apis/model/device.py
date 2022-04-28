@@ -75,6 +75,20 @@ thermostat = device_ns.inherit(
     },
 )
 
+temperature_params = device_ns.model(
+    "TemperatureParams",
+    {
+        "setpoint": fields.Fixed(
+            decimals=2, required=False, description="Thermostat target temperature (C)"
+        ),
+        "mode": fields.String(
+            required=False,
+            enum=[mode for mode in ThermostatMode],
+            description="Thermostat Current Mode",
+        ),
+    },
+)
+
 generation_sample = device_ns.model(
     "Generation Sample",
     {
@@ -145,6 +159,21 @@ home_battery = device_ns.inherit(
     },
 )
 
+home_battery_reserve_limit = device_ns.model(
+    "HomeBatteryReserveLimit", {"reserve_limit": fields.Integer}
+)
+
+home_battery_charge_rate = device_ns.model(
+    "HomeBatteryChargeRate",
+    {
+        "charge_rate": fields.String(
+            required=True,
+            enum=[val for val in ChargeRate],
+            description="Home Battery charge rate",
+        )
+    },
+)
+
 ev_charger = device_ns.inherit(
     "EV Charger",
     device,
@@ -162,6 +191,17 @@ ev_charger = device_ns.inherit(
             enum=[c for c in ChargeRate],
             description="The Device's Charge Rate",
         ),
+    },
+)
+
+ev_charge_rate = device_ns.model(
+    "EVChargeRate",
+    {
+        "charge_rate": fields.String(
+            required=True,
+            enum=[val for val in ChargeRate],
+            description="EV charge rate",
+        )
     },
 )
 

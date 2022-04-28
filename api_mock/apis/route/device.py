@@ -25,7 +25,13 @@ from api_mock.apis.types import (
     DeviceType,
 )
 from api_mock.apis.namespace import device_ns
-from api_mock.apis.model.device import device_der_status, usage_sample
+from api_mock.apis.model.device import ( 
+                                        device_der_status, 
+                                        usage_sample, 
+                                        home_battery_reserve_limit,
+                                        home_battery_charge_rate,
+                                        ev_charge_rate,
+                                        temperature_params)
 
 
 state = load_state()
@@ -221,10 +227,6 @@ class HomeBattery(Resource):
         return myDevice, HTTPStatus.OK
 
 
-home_battery_reserve_limit = device_ns.model(
-    "HomeBatteryReserveLimit", {"reserve_limit": fields.Integer}
-)
-
 @device_ns.route(f"/{DeviceType.HOME_BATTERY}/<string:id>/update_reserve_limit")
 class HomeBatteryReserveLimit(Resource):
     """Update Home Battery Reserve Limit"""
@@ -243,16 +245,6 @@ class HomeBatteryReserveLimit(Resource):
         save_state(state)
         return updated_device, HTTPStatus.OK
 
-home_battery_charge_rate = device_ns.model(
-    "HomeBatteryChargeRate",
-    {
-        "charge_rate": fields.String(
-            required=True,
-            enum=[val for val in ChargeRate],
-            description="Home Battery charge rate",
-        )
-    },
-)
 
 @device_ns.route(f"/{DeviceType.HOME_BATTERY}/<string:id>/update_charge_rate")
 class UpdateHomeBatteryChargeRate(Resource):
@@ -300,18 +292,6 @@ class EVCharger(Resource):
         state["devices"] = DAO.get_list()
         save_state(state)
         return myDevice, HTTPStatus.OK
-
-
-ev_charge_rate = device_ns.model(
-    "EVChargeRate",
-    {
-        "charge_rate": fields.String(
-            required=True,
-            enum=[val for val in ChargeRate],
-            description="EV charge rate",
-        )
-    },
-)
 
 
 @device_ns.route(f"/{DeviceType.EV_CHARGER}/<string:id>/update_charge_rate")
@@ -408,21 +388,6 @@ class PVSystemGeneration(Resource):
                 return device_samples, HTTPStatus.OK
         else:
             return None, HTTPStatus.NOT_FOUND
-
-
-temperature_params = device_ns.model(
-    "TemperatureParams",
-    {
-        "setpoint": fields.Fixed(
-            decimals=2, required=False, description="Thermostat target temperature (C)"
-        ),
-        "mode": fields.String(
-            required=False,
-            enum=[mode for mode in ThermostatMode],
-            description="Thermostat Current Mode",
-        ),
-    },
-)
 
 
 @device_ns.route(f"/{DeviceType.THERMOSTAT}/<string:id>/update_setpoint")
