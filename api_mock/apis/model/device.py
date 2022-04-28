@@ -31,6 +31,17 @@ device = device_ns.model(
     },
 )
 
+device_der_status = device_ns.model(
+    "DeviceDerStatus",
+    {
+        "status": fields.String(
+            required=True,
+            enum=[status for status in DemandResponseStatus],
+            description="The Device's DER Status"
+        )
+    }
+)
+
 # create thermostat api model
 # Thermostat
 thermostat = device_ns.inherit(
@@ -154,7 +165,25 @@ ev_charger = device_ns.inherit(
     },
 )
 
-# Shared
+
+usage_sample = device_ns.model(
+    "Usage Sample",
+    {
+        "name": fields.String(readOnly=True, description="The Device's Name"),
+        "timestamp": fields.DateTime(
+            readOnly=True, description="Timestamp of the sample"
+        ),
+        "power_used": fields.Fixed(
+            readOnly=True, decimals=2, description="Power Used (wH)"
+        ),
+    },
+)
+
+list_of_usage_samples = device_ns.model(
+    "List of Usage Samples",
+    {"samples": fields.List(fields.Nested(usage_sample))},
+)
+
 water_heater = device_ns.inherit(
     "Water Heater",
     device,
@@ -169,5 +198,6 @@ water_heater = device_ns.inherit(
             enum=[service for service in DeviceService],
             description="Service description",
         ),
+        "usage_samples": fields.Nested(list_of_usage_samples),
     },
 )
