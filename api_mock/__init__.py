@@ -1,6 +1,6 @@
 from flask import Flask, Blueprint, redirect
 from flask.helpers import url_for
-from .apis import api_blueprint
+from api_mock.apis import api_blueprint
 from flask_jwt_extended import JWTManager
 
 def create_app() -> Flask:

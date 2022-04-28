@@ -1,14 +1,21 @@
-import json
-from random import sample
-from flask_jwt_extended.view_decorators import jwt_required
-from flask_restx import fields, Namespace, Resource
 from http import HTTPStatus
+
+from api_mock.apis.dao.device_dao import DeviceDAO
+from api_mock.apis.model.device import (device, ev_charger, generation_sample,
+                                        home_battery, pv_system, thermostat,
+                                        water_heater)
+from api_mock.apis.namespace import device_ns
+from api_mock.apis.types import ChargeRate, DeviceType, ThermostatMode
+from flask_jwt_extended.view_decorators import jwt_required
+from flask_restx import Resource, fields, Namespace
+from state import load_state, save_state
+
 from time import sleep
 import jwt
 from state import load_state, save_state
 from datetime import datetime
 
-from .types import (
+from api_mock.apis.types import (
     DemandResponseStatus,
     DeviceStatus,
     DeviceService,
@@ -17,327 +24,14 @@ from .types import (
     ChargeRate,
     DeviceType,
 )
-
-device_ns = Namespace("devices", description="Device Operations")
-
-device = device_ns.model(
-    "Device",
-    {
-        "id": fields.String(required=True, description="The Device unique identifier"),
-        "name": fields.String(required=True, description="The Device's Name"),
-        "type": fields.String(
-            required=True,
-            enum=[device_type for device_type in DeviceType],
-            description="The Device's Type",
-        ),
-        "location": fields.String(required=True, description="The Device's Location"),
-        "provisioned": fields.Boolean(
-            required=True, description="The Device's Provisioned Status"
-        ),
-        "status": fields.String(
-            required=True,
-            description="The Device's Status",
-            enum=[status for status in DeviceStatus],
-        ),
-        "dr_status": fields.String(
-            required=True,
-            description="Demand Response Status",
-            enum=[status for status in DemandResponseStatus],
-        ),
-    },
-)
-
-device_der_status = device_ns.model(
-    "DeviceDerStatus",
-    {
-        "status": fields.String(
-            required=True,
-            enum=[status for status in DemandResponseStatus],
-            description="The Device's DER Status"
-        )
-    }
-)
-
-# create thermostat api model
-# Thermostat
-thermostat = device_ns.inherit(
-    "Thermostat",
-    device,
-    {
-        "mode": fields.String(
-            required=False,
-            enum=[mode for mode in ThermostatMode],
-            description="Thermostat Current Mode",
-        ),
-        "setpoint": fields.Fixed(
-            decimals=2, required=False, description="Thermostat target temperature (C)"
-        ),
-        "setpoint_span": fields.Fixed(
-            decimals=2, required=False, description="Thermostat setpoint span (C)"
-        ),
-        "interior_temperature": fields.Fixed(
-            decimals=2, required=False, description="Thermostat Current Temperature (C)"
-        ),
-        "exterior_temperature": fields.Fixed(
-            decimals=2,
-            required=False,
-            description="Thermostat Exterior Temperature (C)",
-        ),
-        "exterior_weather": fields.String(
-            required=False,
-            enum=[weather for weather in Weather],
-            description="Weather description",
-        ),
-    },
-)
-
-generation_sample = device_ns.model(
-    "Generation Sample",
-    {
-        "name": fields.String(readOnly=True, description="The Device's Name"),
-        "timestamp": fields.DateTime(
-            readOnly=True, description="Timestamp of the sample"
-        ),
-        "power_generated": fields.Fixed(
-            readOnly=True, decimals=2, description="Power Generated (wH)"
-        ),
-        "power_sent_to_grid": fields.Fixed(
-            readonly=True, decimals=2, description="Power Sent to Grid (wH)"
-        ),
-    },
-)
-
-list_of_generation_samples = device_ns.model(
-    "List of Generation Samples",
-    {"samples": fields.List(fields.Nested(generation_sample))},
-)
-
-# Solar Panels
-pv_system = device_ns.inherit(
-    "Photovoltaic Systems",
-    device,
-    {
-        "label": fields.String(
-            required=False,
-            description="The Device's Status (deprecated)",
-            enum=[status for status in DeviceStatus],
-        ),
-        "power_generated_this_month": fields.Fixed(
-            readOnly=True, decimals=2, description="Power Generated This Month (wH)"
-        ),
-        "power_sent_to_grid_this_month": fields.Fixed(
-            readOnly=True, decimals=2, description="Power Sent to Grid This Month (wH)"
-        ),
-        "generation_samples": fields.Nested(list_of_generation_samples),
-    },
-)
-
-pv_systems = device_ns.model(
-    "List of Photovoltaic Systems",
-    {"solar_panels": fields.List(fields.Nested(pv_system))},
-)
-
-# Home Battery
-home_battery = device_ns.inherit(
-    "Home Battery",
-    device,
-    {
-        "reserve_limit": fields.Fixed(
-            decimals=2, required=False, description="Home Battery Reserve Limit %"
-        ),
-        "service": fields.String(
-            required=False,
-            enum=[service for service in DeviceService],
-            description="Service description",
-        ),
-        "charge_percentage": fields.Fixed(
-            decimals=2, required=False, description="The Device's Charge Amount %"
-        ),
-        "charge_rate": fields.String(
-            required=False,
-            enum=[c for c in ChargeRate],
-            description="The Device's Charge Rate",
-        ),
-    },
-)
-
-ev_charger = device_ns.inherit(
-    "EV Charger",
-    device,
-    {
-        "service": fields.String(
-            required=False,
-            enum=[service for service in DeviceService],
-            description="Service description",
-        ),
-        "charge_percentage": fields.Fixed(
-            decimals=2, required=False, description="The Device's Charge Amount %"
-        ),
-        "charge_rate": fields.String(
-            required=False,
-            enum=[c for c in ChargeRate],
-            description="The Device's Charge Rate",
-        ),
-    },
-)
-
-
-usage_sample = device_ns.model(
-    "Usage Sample",
-    {
-        "name": fields.String(readOnly=True, description="The Device's Name"),
-        "timestamp": fields.DateTime(
-            readOnly=True, description="Timestamp of the sample"
-        ),
-        "power_used": fields.Fixed(
-            readOnly=True, decimals=2, description="Power Used (wH)"
-        ),
-    },
-)
-
-list_of_usage_samples = device_ns.model(
-    "List of Usage Samples",
-    {"samples": fields.List(fields.Nested(usage_sample))},
-)
-
-water_heater = device_ns.inherit(
-    "Water Heater",
-    device,
-    {
-        "label": fields.String(
-            required=False,
-            description="The Device's Status (deprecated)",
-            enum=[status for status in DeviceStatus],
-        ),
-        "service": fields.String(
-            required=False,
-            enum=[service for service in DeviceService],
-            description="Service description",
-        ),
-        "usage_samples": fields.Nested(list_of_usage_samples),
-    },
-)
-
-class DeviceDAO(object):
-    def __thermostat_setpoint_span(self, mode: ThermostatMode):
-        return {
-            ThermostatMode.AUTO: 2,
-            ThermostatMode.HEAT: 2,
-            ThermostatMode.COOL: 2,
-            ThermostatMode.ECO: 4,
-            ThermostatMode.OFF: 0,
-        }[mode]
-
-    def __decorate_device(self, device):
-        if device["type"] == "thermostat":
-            device_mode = ThermostatMode(device["mode"])
-            device["setpoint_span"] = self.__thermostat_setpoint_span(device_mode)
-
-        return device
-
-    def __init__(self, devices=[]):
-        self.devices = list(map(self.__decorate_device, devices))
-
-    def get_list(self):
-        return self.devices
-
-    def get(self, id):
-        for device in self.devices:
-            if device["id"] == id:
-                return device
-        device_ns.abort(HTTPStatus.NOT_FOUND, f"device {id} doesn't exist")
-
-    def get_by_type(self, id, type):
-        for device in self.devices:
-            if device["id"] == id and device["type"] == type:
-                return device
-        device_ns.abort(
-            HTTPStatus.NOT_FOUND, f"device {id} doesn't exist or is not of type {type}"
-        )
-
-    def create(self, data):
-        device = data
-        device["id"] = data["id"]
-        self.devices.append(device)
-        return device
-
-    def update(self, id, data):
-        device = self.get(id)
-        device.update(data)
-        device.update(self.__decorate_device(device))
-        return device
-
-    def update_by_type(self, id, data, type):
-        device = self.get(id)
-        if device["type"] != type:
-            device_ns.abort(
-                HTTPStatus.NOT_FOUND,
-                f"device {id} doesn't exist or is not of type {type}",
-            )
-        device.update(data)
-        device.update(self.__decorate_device(device))
-        return device
-
-    def thermostat_setpoint_update(self, id, data):
-        device = self.get_by_type(id, "thermostat")
-        if data["mode"] not in set(mode.value for mode in ThermostatMode):
-            device_ns.abort(
-                HTTPStatus.BAD_REQUEST,
-                f"thermostat mode {data['mode']} is not valid",
-            )
-        device["mode"] = data["mode"]
-        device["setpoint"] = data["setpoint"]
-        device.update(device)
-        device.update(self.__decorate_device(device))
-        return device
-
-    def ev_charge_rate_update(self, id, data):
-        device = self.get_by_type(id, "ev_charger")
-        
-        if data["charge_rate"] not in set(charge_rate.value for charge_rate in ChargeRate):
-            device_ns.abort(
-                HTTPStatus.BAD_REQUEST,
-                f"ev charger charge rate {data['charge_rate']} is not valid",
-            )
-        device["charge_rate"] = data["charge_rate"]
-        device.update(device)
-        device.update(self.__decorate_device(device))
-        return device
-    
-    def set_der_status(self, id, status):
-        device = self.get(id)
-        device["dr_status"] = status
-        return device
-
-    def set_all_der_status(self, status):
-        for device in self.devices:
-            if "dr_status" in device:
-                device["dr_status"] = status
-        return self.devices
-
-    def home_battery_reserve_limit_update(self, id, data):
-        device = self.get_by_type(id, "home_battery")
-        device["reserve_limit"] = data["reserve_limit"]
-        device.update(device)
-        device.update(self.__decorate_device(device))
-        return device
-
-    def home_battery_charge_rate_update(self, id, data):
-        device = self.get_by_type(id, "home_battery")
-        sleep(1)
-        if data["charge_rate"] not in set(charge_rate.value for charge_rate in ChargeRate):
-            device_ns.abort(
-                HTTPStatus.BAD_REQUEST,
-                f"home battery charge rate {data['charge_rate']} is not valid",
-            )
-        device["charge_rate"] = data["charge_rate"]
-        device.update(device)
-        device.update(self.__decorate_device(device))
-        return device
-
-    def delete(self, id):
-        device = self.get(id)
-        self.devices.remove(device)
+from api_mock.apis.namespace import device_ns
+from api_mock.apis.model.device import ( 
+                                        device_der_status, 
+                                        usage_sample, 
+                                        home_battery_reserve_limit,
+                                        home_battery_charge_rate,
+                                        ev_charge_rate,
+                                        temperature_params)
 
 
 state = load_state()
@@ -533,10 +227,6 @@ class HomeBattery(Resource):
         return myDevice, HTTPStatus.OK
 
 
-home_battery_reserve_limit = device_ns.model(
-    "HomeBatteryReserveLimit", {"reserve_limit": fields.Integer}
-)
-
 @device_ns.route(f"/{DeviceType.HOME_BATTERY}/<string:id>/update_reserve_limit")
 class HomeBatteryReserveLimit(Resource):
     """Update Home Battery Reserve Limit"""
@@ -555,16 +245,6 @@ class HomeBatteryReserveLimit(Resource):
         save_state(state)
         return updated_device, HTTPStatus.OK
 
-home_battery_charge_rate = device_ns.model(
-    "HomeBatteryChargeRate",
-    {
-        "charge_rate": fields.String(
-            required=True,
-            enum=[val for val in ChargeRate],
-            description="Home Battery charge rate",
-        )
-    },
-)
 
 @device_ns.route(f"/{DeviceType.HOME_BATTERY}/<string:id>/update_charge_rate")
 class UpdateHomeBatteryChargeRate(Resource):
@@ -612,18 +292,6 @@ class EVCharger(Resource):
         state["devices"] = DAO.get_list()
         save_state(state)
         return myDevice, HTTPStatus.OK
-
-
-ev_charge_rate = device_ns.model(
-    "EVChargeRate",
-    {
-        "charge_rate": fields.String(
-            required=True,
-            enum=[val for val in ChargeRate],
-            description="EV charge rate",
-        )
-    },
-)
 
 
 @device_ns.route(f"/{DeviceType.EV_CHARGER}/<string:id>/update_charge_rate")
@@ -720,21 +388,6 @@ class PVSystemGeneration(Resource):
                 return device_samples, HTTPStatus.OK
         else:
             return None, HTTPStatus.NOT_FOUND
-
-
-temperature_params = device_ns.model(
-    "TemperatureParams",
-    {
-        "setpoint": fields.Fixed(
-            decimals=2, required=False, description="Thermostat target temperature (C)"
-        ),
-        "mode": fields.String(
-            required=False,
-            enum=[mode for mode in ThermostatMode],
-            description="Thermostat Current Mode",
-        ),
-    },
-)
 
 
 @device_ns.route(f"/{DeviceType.THERMOSTAT}/<string:id>/update_setpoint")
