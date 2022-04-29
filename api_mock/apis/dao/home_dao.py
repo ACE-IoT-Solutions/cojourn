@@ -2,9 +2,10 @@ from http import HTTPStatus
 
 from api_mock.apis.model.home import home
 from api_mock.apis.namespace import home_ns
+from api_mock.apis.protocols.home_protocol import HomeProtocol
 
 
-class HomeDAO(object):
+class HomeDAO(HomeProtocol):
     def __init__(self, home=None):
         self.home = home
 
