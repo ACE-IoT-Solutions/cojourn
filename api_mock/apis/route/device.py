@@ -1,6 +1,6 @@
 from http import HTTPStatus
 
-from api_mock.apis.dao.device_dao import DeviceDAO
+from api_mock.apis.dao import DeviceDAO
 from api_mock.apis.model.device import (device, ev_charger, generation_sample,
                                         home_battery, pv_system, thermostat,
                                         water_heater)

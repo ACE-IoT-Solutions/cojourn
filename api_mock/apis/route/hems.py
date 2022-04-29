@@ -1,7 +1,7 @@
 from http import HTTPStatus
-from api_mock.apis.dao.device_dao import DeviceDAO
+from api_mock.apis.dao import DeviceDAO
 
-from api_mock.apis.dao.hems_dao import HEMSDAO
+from api_mock.apis.dao import HEMSDAO
 from api_mock.apis.model.hems import hems, hems_der_status
 from api_mock.apis.namespace import hems_ns
 from flask_jwt_extended.view_decorators import jwt_required

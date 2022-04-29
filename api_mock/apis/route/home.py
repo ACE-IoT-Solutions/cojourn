@@ -1,6 +1,6 @@
 from http import HTTPStatus
 
-from api_mock.apis.dao.home_dao import HomeDAO
+from api_mock.apis.dao import HomeDAO
 from api_mock.apis.model.home import home
 from api_mock.apis.namespace import home_ns
 from flask_jwt_extended.view_decorators import jwt_required

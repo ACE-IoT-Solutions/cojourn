@@ -2,7 +2,7 @@ from datetime import timedelta
 from http import HTTPStatus
 from api_mock.apis.protocols import HEMSProtocol
 
-from api_mock.apis.dao.device_dao import DeviceDAO
+from api_mock.apis.dao import DeviceDAO
 from api_mock.apis.namespace import hems_ns
 
 
