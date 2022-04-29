@@ -2,11 +2,12 @@ from http import HTTPStatus
 from time import sleep
 
 from api_mock.apis.namespace import device_ns
+from api_mock.apis.protocols import DeviceProtocol
 from api_mock.apis.types import (ChargeRate, ThermostatMode)
 
 
-class DeviceDAO(object):
-    def __thermostat_setpoint_span(self, mode: ThermostatMode):
+class DeviceDAO(DeviceProtocol):
+    def _thermostat_setpoint_span(self, mode: ThermostatMode):
         return {
             ThermostatMode.AUTO: 2,
             ThermostatMode.HEAT: 2,
@@ -15,15 +16,15 @@ class DeviceDAO(object):
             ThermostatMode.OFF: 0,
         }[mode]
 
-    def __decorate_device(self, device):
+    def _decorate_device(self, device):
         if device["type"] == "thermostat":
             device_mode = ThermostatMode(device["mode"])
-            device["setpoint_span"] = self.__thermostat_setpoint_span(device_mode)
+            device["setpoint_span"] = self._thermostat_setpoint_span(device_mode)
 
         return device
 
     def __init__(self, devices=[]):
-        self.devices = list(map(self.__decorate_device, devices))
+        self.devices = list(map(self._decorate_device, devices))
 
     def get_list(self):
         return self.devices
@@ -51,7 +52,7 @@ class DeviceDAO(object):
     def update(self, id, data):
         device = self.get(id)
         device.update(data)
-        device.update(self.__decorate_device(device))
+        device.update(self._decorate_device(device))
         return device
 
     def update_by_type(self, id, data, type):
@@ -62,7 +63,7 @@ class DeviceDAO(object):
                 f"device {id} doesn't exist or is not of type {type}",
             )
         device.update(data)
-        device.update(self.__decorate_device(device))
+        device.update(self._decorate_device(device))
         return device
 
     def thermostat_setpoint_update(self, id, data):
@@ -75,7 +76,7 @@ class DeviceDAO(object):
         device["mode"] = data["mode"]
         device["setpoint"] = data["setpoint"]
         device.update(device)
-        device.update(self.__decorate_device(device))
+        device.update(self._decorate_device(device))
         return device
 
     def ev_charge_rate_update(self, id, data):
@@ -88,7 +89,7 @@ class DeviceDAO(object):
             )
         device["charge_rate"] = data["charge_rate"]
         device.update(device)
-        device.update(self.__decorate_device(device))
+        device.update(self._decorate_device(device))
         return device
     
     def set_der_status(self, id, status):
@@ -106,7 +107,7 @@ class DeviceDAO(object):
         device = self.get_by_type(id, "home_battery")
         device["reserve_limit"] = data["reserve_limit"]
         device.update(device)
-        device.update(self.__decorate_device(device))
+        device.update(self._decorate_device(device))
         return device
 
     def home_battery_charge_rate_update(self, id, data):
@@ -119,7 +120,7 @@ class DeviceDAO(object):
             )
         device["charge_rate"] = data["charge_rate"]
         device.update(device)
-        device.update(self.__decorate_device(device))
+        device.update(self._decorate_device(device))
         return device
 
     def delete(self, id):
