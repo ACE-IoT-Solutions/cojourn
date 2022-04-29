@@ -32,10 +32,9 @@ from api_mock.apis.model.device import (
                                         home_battery_charge_rate,
                                         ev_charge_rate,
                                         temperature_params)
-
+from flask import current_app
 
 state = load_state()
-DAO = DeviceDAO(state.get("devices", []))
 
 
 @device_ns.route("/")
@@ -47,7 +46,7 @@ class DeviceList(Resource):
     @jwt_required()
     def get(self):
         """List all devices"""
-        return DAO.get_list(), HTTPStatus.OK
+        return current_app.config["DeviceDAO"].get_list(), HTTPStatus.OK
 
     @device_ns.doc("create_device")
     @device_ns.expect(device)
@@ -55,8 +54,8 @@ class DeviceList(Resource):
     @jwt_required()
     def post(self):
         """Create a new device"""
-        myDevice = DAO.create(device_ns.payload)
-        state["devices"] = DAO.get_list()
+        myDevice = current_app.config["DeviceDAO"].create(device_ns.payload)
+        state["devices"] = current_app.config["DeviceDAO"].get_list()
         save_state(state)
         return myDevice, HTTPStatus.CREATED
 
@@ -71,7 +70,7 @@ class Device(Resource):
     def get(self, id):
         """get device by id"""
         sleep(1)
-        return DAO.get(id), HTTPStatus.OK
+        return current_app.config["DeviceDAO"].get(id), HTTPStatus.OK
 
 
     @device_ns.doc("Update device")
@@ -83,8 +82,8 @@ class Device(Resource):
         if device_ns.payload is None:
             return "No payload", HTTPStatus.BAD_REQUEST
 
-        myDevice = DAO.update(id, device_ns.payload)
-        state["devices"] = DAO.get_list()
+        myDevice = current_app.config["DeviceDAO"].update(id, device_ns.payload)
+        state["devices"] = current_app.config["DeviceDAO"].get_list()
         save_state(state)
         return myDevice, HTTPStatus.OK
 
@@ -97,8 +96,8 @@ class Device(Resource):
         if device_ns.payload is None:
             return "No payload", HTTPStatus.BAD_REQUEST
 
-        myDevice = DAO.set_der_status(id, device_ns.payload["status"])
-        state["devices"] = DAO.get_list()
+        myDevice = current_app.config["DeviceDAO"].set_der_status(id, device_ns.payload["status"])
+        state["devices"] = current_app.config["DeviceDAO"].get_list()
         save_state(state)
         return myDevice, HTTPStatus.OK
 
@@ -111,7 +110,7 @@ class Thermostat(Resource):
     @jwt_required()
     def get(self, id):
         """get thermostat by id"""
-        device = DAO.get(id)
+        device = current_app.config["DeviceDAO"].get(id)
         sleep(1)
         if device.get("type") != DeviceType.THERMOSTAT:
             device_ns.abort(
@@ -128,8 +127,8 @@ class Thermostat(Resource):
         if device_ns.payload is None:
             return "No payload", HTTPStatus.BAD_REQUEST
 
-        myDevice = DAO.update(id, device_ns.payload)
-        state["devices"] = DAO.get_list()
+        myDevice = current_app.config["DeviceDAO"].update(id, device_ns.payload)
+        state["devices"] = current_app.config["DeviceDAO"].get_list()
         save_state(state)
         return myDevice, HTTPStatus.OK
 
@@ -143,7 +142,7 @@ class WaterHeater(Resource):
     @jwt_required()
     def get(self, id):
         """get water_heater by id"""
-        device = DAO.get(id)
+        device = current_app.config["DeviceDAO"].get(id)
         if device.get("type") != DeviceType.WATER_HEATER:
             device_ns.abort(
                 HTTPStatus.BAD_REQUEST, f"device {id} is not a water_heater"
@@ -159,8 +158,8 @@ class WaterHeater(Resource):
         if device_ns.payload is None:
             return "No payload", HTTPStatus.BAD_REQUEST
 
-        myDevice = DAO.update(id, device_ns.payload)
-        state["devices"] = DAO.get_list()
+        myDevice = current_app.config["DeviceDAO"].update(id, device_ns.payload)
+        state["devices"] = current_app.config["DeviceDAO"].get_list()
         save_state(state)
         return myDevice, HTTPStatus.OK
 
@@ -178,7 +177,7 @@ class WaterHeaterPowerUsage(Resource):
         return self.get_timeseries(id)
 
     def get_timeseries(self, device_id: str):
-        device = DAO.get(device_id)
+        device = current_app.config["DeviceDAO"].get(device_id)
         print(device)
         if (
             device.get("usage_samples") != []
@@ -205,7 +204,7 @@ class HomeBattery(Resource):
     @jwt_required()
     def get(self, id):
         """get home_battery by id"""
-        device = DAO.get(id)
+        device = current_app.config["DeviceDAO"].get(id)
         if device.get("type") != DeviceType.HOME_BATTERY:
             device_ns.abort(
                 HTTPStatus.BAD_REQUEST, f"device {id} is not a home_battery"
@@ -221,8 +220,8 @@ class HomeBattery(Resource):
         if device_ns.payload is None:
             return "No payload", HTTPStatus.BAD_REQUEST
 
-        myDevice = DAO.update(id, device_ns.payload)
-        state["devices"] = DAO.get_list()
+        myDevice = current_app.config["DeviceDAO"].update(id, device_ns.payload)
+        state["devices"] = current_app.config["DeviceDAO"].get_list()
         save_state(state)
         return myDevice, HTTPStatus.OK
 
@@ -240,8 +239,8 @@ class HomeBatteryReserveLimit(Resource):
         if device_ns.payload is None:
             return "No payload", HTTPStatus.BAD_REQUEST
 
-        updated_device = DAO.home_battery_reserve_limit_update(id, device_ns.payload)
-        state["devices"] = DAO.get_list()
+        updated_device = current_app.config["DeviceDAO"].home_battery_reserve_limit_update(id, device_ns.payload)
+        state["devices"] = current_app.config["DeviceDAO"].get_list()
         save_state(state)
         return updated_device, HTTPStatus.OK
 
@@ -260,8 +259,8 @@ class UpdateHomeBatteryChargeRate(Resource):
             return "No payload", HTTPStatus.BAD_REQUEST
 
         print("Update battery charge rate", device_ns.payload)
-        myDevice = DAO.home_battery_charge_rate_update(id, device_ns.payload)
-        state["devices"] = DAO.get_list()
+        myDevice = current_app.config["DeviceDAO"].home_battery_charge_rate_update(id, device_ns.payload)
+        state["devices"] = current_app.config["DeviceDAO"].get_list()
         save_state(state)
         return myDevice, HTTPStatus.OK
 
@@ -274,7 +273,7 @@ class EVCharger(Resource):
     @jwt_required()
     def get(self, id):
         """get ev_charger by id"""
-        device = DAO.get(id)
+        device = current_app.config["DeviceDAO"].get(id)
         if device.get("type") != DeviceType.EV_CHARGER:
             device_ns.abort(HTTPStatus.BAD_REQUEST, f"device {id} is not a ev_charger")
         return device, HTTPStatus.OK
@@ -288,8 +287,8 @@ class EVCharger(Resource):
         if device_ns.payload is None:
             return "No payload", HTTPStatus.BAD_REQUEST
 
-        myDevice = DAO.update(id, device_ns.payload)
-        state["devices"] = DAO.get_list()
+        myDevice = current_app.config["DeviceDAO"].update(id, device_ns.payload)
+        state["devices"] = current_app.config["DeviceDAO"].get_list()
         save_state(state)
         return myDevice, HTTPStatus.OK
 
@@ -307,8 +306,8 @@ class UpdateEVChargeRate(Resource):
         if device_ns.payload is None:
             return "No payload", HTTPStatus.BAD_REQUEST
 
-        myDevice = DAO.ev_charge_rate_update(id, device_ns.payload)
-        state["devices"] = DAO.get_list()
+        myDevice = current_app.config["DeviceDAO"].ev_charge_rate_update(id, device_ns.payload)
+        state["devices"] = current_app.config["DeviceDAO"].get_list()
         save_state(state)
         return myDevice, HTTPStatus.OK
 
@@ -321,7 +320,7 @@ class PVSystem(Resource):
     @jwt_required()
     def get(self, id):
         """get pv_system by id"""
-        device = DAO.get(id)
+        device = current_app.config["DeviceDAO"].get(id)
         if device.get("type") != DeviceType.PV_SYSTEM:
             device_ns.abort(HTTPStatus.BAD_REQUEST, f"device {id} is not a pv_system")
         return device, HTTPStatus.OK
@@ -335,8 +334,8 @@ class PVSystem(Resource):
         if device_ns.payload is None:
             return "No payload", HTTPStatus.BAD_REQUEST
 
-        myDevice = DAO.update(id, device_ns.payload)
-        state["devices"] = DAO.get_list()
+        myDevice = current_app.config["DeviceDAO"].update(id, device_ns.payload)
+        state["devices"] = current_app.config["DeviceDAO"].get_list()
         save_state(state)
         return myDevice, HTTPStatus.OK
 
@@ -371,7 +370,7 @@ class PVSystemGeneration(Resource):
         return sample
     
     def get_timeseries(self, device_id: str):
-        device = DAO.get(device_id)
+        device = current_app.config["DeviceDAO"].get(device_id)
         if (
             device.get("generation_samples") != []
             and device.get("generation_samples") is not None
@@ -399,12 +398,12 @@ class Device(Resource):
         if device_ns.payload is None:
             return "No payload", HTTPStatus.BAD_REQUEST
 
-        device = DAO.get(id)
+        device = current_app.config["DeviceDAO"].get(id)
         if device["type"] != "thermostat":
             return f"Cannot set temperature on {device.type}", HTTPStatus.BAD_REQUEST
 
-        updatedDevice = DAO.thermostat_setpoint_update(id, device_ns.payload)
-        state["devices"] = DAO.get_list()
+        updatedDevice = current_app.config["DeviceDAO"].thermostat_setpoint_update(id, device_ns.payload)
+        state["devices"] = current_app.config["DeviceDAO"].get_list()
         save_state(state)
 
         return updatedDevice, HTTPStatus.OK
