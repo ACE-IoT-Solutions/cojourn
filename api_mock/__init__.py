@@ -7,7 +7,7 @@ def create_app() -> Flask:
     app = Flask(__name__)
     app.config["JWT_SECRET_KEY"] = "super secret"
     app.register_blueprint(api_blueprint)
-    jwt = JWTManager(app)
+    jwt.init_app(app)
    
     @app.route("/")
     @app.route('/<path:path>')
