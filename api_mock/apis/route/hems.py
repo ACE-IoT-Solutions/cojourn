@@ -34,7 +34,7 @@ class HEMSDERStatus(Resource):
             status = hems_ns.payload["status"]
             hems["dr_status"] = status
             state["hems"] = hems
-            state["devices"] = DeviceDAO.set_all_der_status(status)
+            state["devices"] = DAO.set_all_der_status(status)
             save_state(state)
 
             return DAO.get(), HTTPStatus.OK
