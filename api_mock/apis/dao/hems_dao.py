@@ -1,8 +1,8 @@
 from datetime import timedelta
 from http import HTTPStatus
 
-from api_mock.apis.dao.device_dao import DeviceDAO
 from api_mock.apis.namespace import hems_ns
+from api_mock.apis.route.device import DAO as device_dao
 
 
 class HEMSDAO(object):
@@ -32,8 +32,8 @@ class HEMSDAO(object):
         if self.hems["id"] != id:
             hems_ns.abort(HTTPStatus.NOT_FOUND, f"HEMS with id {id} doesn't exist")
         
-        self.hems.dr_status = status
-        return DeviceDAO.set_all_der_status(status)
+        self.hems["dr_status"] = status
+        return device_dao.set_all_der_status(status)
 
     def delete(self):
         self.hems = None
