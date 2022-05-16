@@ -16,6 +16,7 @@ REQUIRED = [
     "Flask-JWT-Extended",
     "flask-restx",
     "PyJWT",
+    "python-dotenv",
     "Werkzeug"
 ]
 
