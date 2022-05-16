@@ -2,8 +2,8 @@ from datetime import timedelta
 from http import HTTPStatus
 from api_mock.apis.protocols import HEMSProtocol
 
-from api_mock.apis.dao import DeviceDAO
 from api_mock.apis.namespace import hems_ns
+from flask import current_app
 
 
 class HEMSDAO(HEMSProtocol):
@@ -33,8 +33,8 @@ class HEMSDAO(HEMSProtocol):
         if self.hems["id"] != id:
             hems_ns.abort(HTTPStatus.NOT_FOUND, f"HEMS with id {id} doesn't exist")
         
-        self.hems.dr_status = status
-        return DeviceDAO.set_all_der_status(status)
+        self.hems["dr_status"] = status
+        return current_app.config["DeviceDAO"].set_all_der_status(status)
 
     def delete(self):
         self.hems = None
