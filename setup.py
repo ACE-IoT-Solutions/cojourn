@@ -51,7 +51,7 @@ setup(
     author=AUTHOR,
     python_requires=REQUIRES_PYTHON,
     url=URL,
-    packages=find_packages(exclude=["state", "tests", "*.tests", "*.tests.*", "tests.*"]),
+    packages=find_packages(exclude=["tests", "*.tests", "*.tests.*", "tests.*"]),
     install_requires=REQUIRED,
     extras_require=EXTRAS,
     include_package_data=True,
