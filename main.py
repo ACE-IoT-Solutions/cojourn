@@ -1,31 +1,6 @@
 from optparse import OptionParser
-from api_mock import create_app
 import logging
-
-from http import HTTPStatus
-from api_mock.apis.protocols import AuthProtocol
-
-from api_mock.apis.namespace import auth_ns
-from flask_jwt_extended import create_access_token, get_jwt_identity
-from datetime import timedelta
-
-
-class myDAO(AuthProtocol):
-    def __init__(self):
-        self.tokens = []
-
-    @auth_ns.doc(security=[])
-    def login(self, data):
-        token = create_access_token(data, expires_delta=timedelta(minutes=30))
-        self.tokens.append(token)
-        return {"access_token": token}
-
-    def logout(self):
-        try:
-            self.tokens.remove(get_jwt_identity())
-        except ValueError:
-            auth_ns.abort
-            return HTTPStatus.NOT_FOUND
+from cojourn.api_mock import create_app
 
 
 def set_simulator(options, opt_str, value, parser):
@@ -53,7 +28,7 @@ def main():
     logger = logging.getLogger(__name__)
     logger.setLevel(logging.INFO)
 
-    app = create_app("ProductionConfig", myDAO())
+    app = create_app("ProductionConfig")
     app.run(host=options.host, port=options.port, debug=True)
 
 
