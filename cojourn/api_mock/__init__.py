@@ -25,7 +25,7 @@ from cojourn.state import load_state
 
 def create_app(config: str, auth_dao: AuthProtocol=None, device_dao: DeviceProtocol=None, hems_dao: HEMSProtocol=None, home_dao: HomeProtocol=None, user_dao: UserProtocol=None) -> Flask:
     app = Flask(__name__)
-    cfg = import_string(f"config.{config}")  
+    cfg = import_string(f"cojourn.config.{config}")  
     app.config.from_object(cfg)
     
     daos = init_daos(
