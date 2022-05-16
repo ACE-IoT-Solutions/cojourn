@@ -1,5 +1,5 @@
-from api_mock.apis.namespace import hems_ns
-from api_mock.apis.types import DemandResponseStatus
+from cojourn.api_mock.apis.namespace import hems_ns
+from cojourn.api_mock.apis.types import DemandResponseStatus
 from flask_restx import fields
 
 hems = hems_ns.model('HEMS', {

@@ -1,16 +1,15 @@
 from http import HTTPStatus
-from api_mock.apis.dao.device_dao import DeviceDAO
+from cojourn.api_mock.apis.dao import DeviceDAO
 
-from api_mock.apis.dao.hems_dao import HEMSDAO
-from api_mock.apis.model.hems import hems, hems_der_status
-from api_mock.apis.namespace import hems_ns
+from cojourn.api_mock.apis.dao import HEMSDAO
+from cojourn.api_mock.apis.model.hems import hems, hems_der_status
+from cojourn.api_mock.apis.namespace import hems_ns
 from flask_jwt_extended.view_decorators import jwt_required
 from flask_restx import Resource
 from state import load_state, save_state
-
+from flask import current_app
 
 state = load_state()
-DAO = HEMSDAO(state.get("hems", {}))
 
 @hems_ns.route('/')
 class HEMS(Resource):
@@ -19,7 +18,7 @@ class HEMS(Resource):
     @jwt_required()
     def get(self):
         '''Get HEMS Config'''
-        return DAO.get(), HTTPStatus.OK
+        return current_app.config["HEMSDAO"].get(), HTTPStatus.OK
 
 @hems_ns.route('/<string:id>/set_der_status')
 class HEMSDERStatus(Resource):
@@ -29,12 +28,12 @@ class HEMSDERStatus(Resource):
     @jwt_required()
     def post(self, id):
         '''Set the HEMS\'s Der Status'''
-        hems = DAO.get()
+        hems = current_app.config["HEMSDAO"].get()
         if id == hems["id"]:
             status = hems_ns.payload["status"]
             hems["dr_status"] = status
             state["hems"] = hems
-            state["devices"] = DAO.set_der_status(id, status)
+            state["devices"] = current_app.config["HEMSDAO"].set_der_status(id, status)
             save_state(state)
 
-            return DAO.get(), HTTPStatus.OK
+            return current_app.config["HEMSDAO"].get(), HTTPStatus.OK

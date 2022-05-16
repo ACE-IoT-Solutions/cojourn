@@ -1,5 +1,5 @@
-from api_mock.apis.namespace import device_ns
-from api_mock.apis.types import (ChargeRate, DemandResponseStatus,
+from cojourn.api_mock.apis.namespace import device_ns
+from cojourn.api_mock.apis.types import (ChargeRate, DemandResponseStatus,
                                  DeviceService, DeviceStatus, DeviceType,
                                  ThermostatMode, Weather)
 from flask_restx import fields

@@ -1,11 +1,12 @@
 from datetime import timedelta
 from http import HTTPStatus
+from cojourn.api_mock.apis.protocols import HEMSProtocol
 
-from api_mock.apis.namespace import hems_ns
-from api_mock.apis.route.device import DAO as device_dao
+from cojourn.api_mock.apis.namespace import hems_ns
+from flask import current_app
 
 
-class HEMSDAO(object):
+class HEMSDAO(HEMSProtocol):
     def __init__(self, hems=None):
         self.hems = hems
         self.tokens = []
@@ -33,7 +34,7 @@ class HEMSDAO(object):
             hems_ns.abort(HTTPStatus.NOT_FOUND, f"HEMS with id {id} doesn't exist")
         
         self.hems["dr_status"] = status
-        return device_dao.set_all_der_status(status)
+        return current_app.config["DeviceDAO"].set_all_der_status(status)
 
     def delete(self):
         self.hems = None
