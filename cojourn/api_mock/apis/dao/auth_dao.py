@@ -1,8 +1,8 @@
 from datetime import timedelta
 from http import HTTPStatus
-from api_mock.apis.protocols import AuthProtocol
+from cojourn.api_mock.apis.protocols import AuthProtocol
 
-from api_mock.apis.namespace import auth_ns
+from cojourn.api_mock.apis.namespace import auth_ns
 from flask_jwt_extended import create_access_token, get_jwt_identity
 
 

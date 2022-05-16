@@ -1,10 +1,10 @@
 from http import HTTPStatus
 
-from api_mock.apis.model.device import (device, ev_charger, generation_sample,
+from cojourn.api_mock.apis.model.device import (device, ev_charger, generation_sample,
                                         home_battery, pv_system, thermostat,
                                         water_heater)
-from api_mock.apis.namespace import device_ns
-from api_mock.apis.types import ChargeRate, DeviceType, ThermostatMode
+from cojourn.api_mock.apis.namespace import device_ns
+from cojourn.api_mock.apis.types import ChargeRate, DeviceType, ThermostatMode
 from flask_jwt_extended.view_decorators import jwt_required
 from flask_restx import Resource, fields, Namespace
 from state import load_state, save_state
@@ -14,7 +14,7 @@ import jwt
 from state import load_state, save_state
 from datetime import datetime
 
-from api_mock.apis.types import (
+from cojourn.api_mock.apis.types import (
     DemandResponseStatus,
     DeviceStatus,
     DeviceService,
@@ -23,8 +23,8 @@ from api_mock.apis.types import (
     ChargeRate,
     DeviceType,
 )
-from api_mock.apis.namespace import device_ns
-from api_mock.apis.model.device import ( 
+from cojourn.api_mock.apis.namespace import device_ns
+from cojourn.api_mock.apis.model.device import ( 
                                         device_der_status, 
                                         usage_sample, 
                                         home_battery_reserve_limit,

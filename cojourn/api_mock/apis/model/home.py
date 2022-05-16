@@ -1,4 +1,4 @@
-from api_mock.apis.namespace import home_ns
+from cojourn.api_mock.apis.namespace import home_ns
 from flask_restx import fields
 
 status_message = home_ns.model('StatusMessage', {

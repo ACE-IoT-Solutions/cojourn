@@ -1,8 +1,8 @@
 from http import HTTPStatus
 
-from api_mock.apis.model.home import home
-from api_mock.apis.namespace import home_ns
-from api_mock.apis.protocols.home_protocol import HomeProtocol
+from cojourn.api_mock.apis.model.home import home
+from cojourn.api_mock.apis.namespace import home_ns
+from cojourn.api_mock.apis.protocols.home_protocol import HomeProtocol
 
 
 class HomeDAO(HomeProtocol):

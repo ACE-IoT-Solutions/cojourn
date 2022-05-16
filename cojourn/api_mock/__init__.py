@@ -1,21 +1,21 @@
 from flask import Flask, Blueprint, redirect
 from flask.helpers import url_for
-from api_mock.apis import api_blueprint
-from api_mock.apis.dao import (
+from cojourn.api_mock.apis import api_blueprint
+from cojourn.api_mock.apis.dao import (
     AuthDAO,
     DeviceDAO,
     HEMSDAO,
     HomeDAO,
     UserDAO
     )
-from api_mock.apis.protocols import (
+from cojourn.api_mock.apis.protocols import (
     AuthProtocol,
     DeviceProtocol,
     HEMSProtocol,
     HomeProtocol,
     UserProtocol
     )
-from api_mock.extensions import jwt
+from cojourn.api_mock.extensions import jwt
 from dotenv import load_dotenv
 from werkzeug.utils import import_string
 from config import Config

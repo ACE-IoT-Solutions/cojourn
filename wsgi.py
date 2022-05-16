@@ -1,3 +1,3 @@
-from api_mock import create_app
+from cojourn.api_mock import create_app
 
 app = create_app("ProductionConfig")

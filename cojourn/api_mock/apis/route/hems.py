@@ -1,9 +1,9 @@
 from http import HTTPStatus
-from api_mock.apis.dao import DeviceDAO
+from cojourn.api_mock.apis.dao import DeviceDAO
 
-from api_mock.apis.dao import HEMSDAO
-from api_mock.apis.model.hems import hems, hems_der_status
-from api_mock.apis.namespace import hems_ns
+from cojourn.api_mock.apis.dao import HEMSDAO
+from cojourn.api_mock.apis.model.hems import hems, hems_der_status
+from cojourn.api_mock.apis.namespace import hems_ns
 from flask_jwt_extended.view_decorators import jwt_required
 from flask_restx import Resource
 from state import load_state, save_state

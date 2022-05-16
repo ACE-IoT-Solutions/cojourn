@@ -1,8 +1,8 @@
 from datetime import timedelta
 from http import HTTPStatus
-from api_mock.apis.protocols import HEMSProtocol
+from cojourn.api_mock.apis.protocols import HEMSProtocol
 
-from api_mock.apis.namespace import hems_ns
+from cojourn.api_mock.apis.namespace import hems_ns
 from flask import current_app
 
 

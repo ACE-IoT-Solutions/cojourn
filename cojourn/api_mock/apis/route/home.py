@@ -1,8 +1,8 @@
 from http import HTTPStatus
 
-from api_mock.apis.dao import HomeDAO
-from api_mock.apis.model.home import home
-from api_mock.apis.namespace import home_ns
+from cojourn.api_mock.apis.dao import HomeDAO
+from cojourn.api_mock.apis.model.home import home
+from cojourn.api_mock.apis.namespace import home_ns
 from flask_jwt_extended.view_decorators import jwt_required
 from flask_restx import Resource
 from flask import current_app

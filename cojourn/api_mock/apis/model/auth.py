@@ -1,4 +1,4 @@
-from api_mock.apis.namespace import auth_ns
+from cojourn.api_mock.apis.namespace import auth_ns
 from flask_restx import fields
 
 token = auth_ns.model("Token", {

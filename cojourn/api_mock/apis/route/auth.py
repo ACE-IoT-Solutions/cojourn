@@ -1,7 +1,7 @@
 from http import HTTPStatus
 
-from api_mock.apis.model.auth import login_fields, token
-from api_mock.apis.namespace import auth_ns
+from cojourn.api_mock.apis.model.auth import login_fields, token
+from cojourn.api_mock.apis.namespace import auth_ns
 from flask_jwt_extended import jwt_required
 from flask_jwt_extended.view_decorators import jwt_required
 from flask_restx import Resource

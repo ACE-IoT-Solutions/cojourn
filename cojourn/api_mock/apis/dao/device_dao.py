@@ -1,9 +1,9 @@
 from http import HTTPStatus
 from time import sleep
 
-from api_mock.apis.namespace import device_ns
-from api_mock.apis.protocols import DeviceProtocol
-from api_mock.apis.types import (ChargeRate, ThermostatMode)
+from cojourn.api_mock.apis.namespace import device_ns
+from cojourn.api_mock.apis.protocols import DeviceProtocol
+from cojourn.api_mock.apis.types import (ChargeRate, ThermostatMode)
 
 
 class DeviceDAO(DeviceProtocol):
