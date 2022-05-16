@@ -19,7 +19,7 @@ from cojourn.api_mock.extensions import jwt
 from dotenv import load_dotenv
 from werkzeug.utils import import_string
 from config import Config
-from state import load_state
+from cojourn.state import load_state
 
 
 

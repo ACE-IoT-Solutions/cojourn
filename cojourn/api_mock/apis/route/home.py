@@ -6,7 +6,7 @@ from cojourn.api_mock.apis.namespace import home_ns
 from flask_jwt_extended.view_decorators import jwt_required
 from flask_restx import Resource
 from flask import current_app
-from state import load_state, save_state
+from cojourn.state import load_state, save_state
 
 state = load_state()
 

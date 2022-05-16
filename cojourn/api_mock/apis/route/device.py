@@ -7,11 +7,10 @@ from cojourn.api_mock.apis.namespace import device_ns
 from cojourn.api_mock.apis.types import ChargeRate, DeviceType, ThermostatMode
 from flask_jwt_extended.view_decorators import jwt_required
 from flask_restx import Resource, fields, Namespace
-from state import load_state, save_state
 
 from time import sleep
 import jwt
-from state import load_state, save_state
+from cojourn.state import load_state, save_state
 from datetime import datetime
 
 from cojourn.api_mock.apis.types import (

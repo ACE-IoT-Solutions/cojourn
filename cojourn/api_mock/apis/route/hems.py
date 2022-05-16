@@ -6,7 +6,7 @@ from cojourn.api_mock.apis.model.hems import hems, hems_der_status
 from cojourn.api_mock.apis.namespace import hems_ns
 from flask_jwt_extended.view_decorators import jwt_required
 from flask_restx import Resource
-from state import load_state, save_state
+from cojourn.state import load_state, save_state
 from flask import current_app
 
 state = load_state()
