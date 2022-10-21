@@ -27,6 +27,10 @@ class HEMSProtocol(Protocol):
         ...
 
     @abstractmethod
+    def generate_new_jwt(self) -> str:
+        ...
+
+    @abstractmethod
     def set_der_status(self, id: str, status: str) -> Union[List[dict], Tuple[HTTPStatus, str]]:
         ...
 
