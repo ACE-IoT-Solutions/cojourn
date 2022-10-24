@@ -4,7 +4,7 @@ from cojourn.api_mock.apis.protocols import HEMSProtocol
 
 from cojourn.api_mock.apis.namespace import hems_ns
 from flask import current_app
-
+import jwt
 
 class HEMSDAO(HEMSProtocol):
     def __init__(self, hems=None):
@@ -28,6 +28,12 @@ class HEMSDAO(HEMSProtocol):
     def update(self, data):
         self.hems.update(data)
         return self.hems
+
+    def generate_new_jwt(self):
+        jwt_data = {'sub': "1234567890", 'name': "John Doe", 'iat': 1516239022}
+        encoded_jwt = jwt.encode(jwt_data, "super secret", algorithm="HS256")
+        self.hems['jwt'] = encoded_jwt
+        return encoded_jwt
 
     def set_der_status(self, id, status):
         if self.hems["id"] != id:

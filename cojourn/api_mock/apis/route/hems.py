@@ -47,8 +47,8 @@ class HEMSJWTGen(Resource):
     def post(self):
         '''Generate a new JWT'''
 
-        if not os.path.exists(JWT_FILE) and state.get('jwt') is None:
-            state['jwt'] = current_app.config["HEMSDAO"].generate_new_jwt()
-            current_app.jwt = state['jwt']
+        if not state.get('jwt'):
+            current_app.jwt = current_app.config["HEMSDAO"].generate_new_jwt()
+            state['jwt'] = True
             save_state(state)
             return current_app.config["HEMSDAO"].get(), HTTPStatus.OK
