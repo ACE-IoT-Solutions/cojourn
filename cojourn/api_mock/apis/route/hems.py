@@ -8,7 +8,7 @@ from flask_jwt_extended.view_decorators import jwt_required
 from flask_restx import Resource
 from cojourn.state import load_state, save_state
 from flask import current_app
-import os
+import jwt
 
 state = load_state()
 JWT_FILE = "/var/lib/volttron/cojourn.jwt"
@@ -43,11 +43,18 @@ class HEMSDERStatus(Resource):
 @hems_ns.route('/generate_new_jwt')
 class HEMSJWTGen(Resource):
     @hems_ns.doc('generate_new_jwt')
+    @hems_ns.expect(hems_jwt)
     @hems_ns.marshal_with(hems_jwt)
     def post(self):
         '''Generate a new JWT'''
-
-        if not state.get('jwt'):
+        incoming_jwt = hems_ns.payload["jwt"]
+        MAC_ADDRESS = "001122334455"
+        try:
+            decoded_jwt = jwt.decode(incoming_jwt, f"6a5aa870-ed67-454a-b05d-ba9a5b2d52c5{MAC_ADDRESS}", algorithms=["HS256"])
+        except jwt.ExpiredSignatureError as e:
+            return e
+        
+        if decoded_jwt['authorized']:
             current_app.jwt = current_app.config["HEMSDAO"].generate_new_jwt()
             state['jwt'] = True
             save_state(state)
