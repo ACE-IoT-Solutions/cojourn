@@ -1,8 +1,8 @@
-from api_mock.apis.route.auth import auth_ns
-from api_mock.apis.route.device import device_ns
-from api_mock.apis.route.hems import hems_ns
-from api_mock.apis.route.home import home_ns
-from api_mock.apis.route.user import user_ns
+from cojourn.api_mock.apis.route.auth import auth_ns
+from cojourn.api_mock.apis.route.device import device_ns
+from cojourn.api_mock.apis.route.hems import hems_ns
+from cojourn.api_mock.apis.route.home import home_ns
+from cojourn.api_mock.apis.route.user import user_ns
 from flask import Blueprint
 from flask_restx import Api
 

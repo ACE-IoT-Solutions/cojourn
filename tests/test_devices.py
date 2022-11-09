@@ -3,7 +3,7 @@ import tempfile
 import pytest
 import json
 
-from api_mock import create_app
+from cojourn.api_mock import create_app
 from .support import authenticated_client, load_fixture
 
 thermostat_data = load_fixture('devices/thermostat.json')

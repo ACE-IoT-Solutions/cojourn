@@ -1,5 +1,5 @@
-from api_mock.apis.namespace import hems_ns
-from api_mock.apis.types import DemandResponseStatus
+from cojourn.api_mock.apis.namespace import hems_ns
+from cojourn.api_mock.apis.types import DemandResponseStatus
 from flask_restx import fields
 
 hems = hems_ns.model('HEMS', {
@@ -14,3 +14,7 @@ hems = hems_ns.model('HEMS', {
 
 hems_der_status = hems_ns.model('HemsDerStatus', {"status": fields.String(required=True, enum=[
                                 status for status in DemandResponseStatus], description='The HEMS\'s Der Status')})
+
+hems_jwt = hems_ns.model('HEMS JWT', {'jwt': fields.String(required=True, 
+                        description="The JWT used to authenticate to the API")
+                        })

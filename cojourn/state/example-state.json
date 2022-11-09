@@ -34,7 +34,7 @@
       "provisioned": true,
       "status": "active",
       "dr_status": "normal",
-      "type": "solar_panels",
+      "type": "pv_system",
       "label": "active",
       "power_generated_this_month": 200000,
       "power_sent_to_grid_this_month": 20000,
