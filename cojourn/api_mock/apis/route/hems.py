@@ -9,9 +9,12 @@ from flask_restx import Resource
 from cojourn.state import load_state, save_state
 from flask import current_app
 import jwt
+import netifaces as ni
 
 state = load_state()
 JWT_FILE = "/var/lib/volttron/cojourn.jwt"
+SHARED_SECRET = "6a5aa870-ed67-454a-b05d-ba9a5b2d52c5"
+MAC_ADDRESS = ni.ifaddresses('eth1')[ni.AF_LINK][0]['addr'].replace(':', "")
 
 @hems_ns.route('/')
 class HEMS(Resource):
@@ -48,9 +51,8 @@ class HEMSJWTGen(Resource):
     def post(self):
         '''Generate a new JWT'''
         incoming_jwt = hems_ns.payload["jwt"]
-        MAC_ADDRESS = "001122334455"
         try:
-            decoded_jwt = jwt.decode(incoming_jwt, f"6a5aa870-ed67-454a-b05d-ba9a5b2d52c5{MAC_ADDRESS}", algorithms=["HS256"])
+            decoded_jwt = jwt.decode(incoming_jwt, f"{SHARED_SECRET}{MAC_ADDRESS}", algorithms=["HS256"])
         except jwt.ExpiredSignatureError as e:
             return e
         
