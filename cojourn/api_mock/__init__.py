@@ -19,13 +19,23 @@ from cojourn.api_mock.extensions import jwt
 from dotenv import load_dotenv
 from werkzeug.utils import import_string
 from cojourn.config import Config
-from cojourn.state import load_state
+from cojourn.state import load_state, save_state
 
+import secrets
 
 
 def create_app(config: str, auth_dao: AuthProtocol=None, device_dao: DeviceProtocol=None, hems_dao: HEMSProtocol=None, home_dao: HomeProtocol=None, user_dao: UserProtocol=None) -> Flask:
     app = Flask(__name__)
+    state = load_state
     cfg = import_string(f"cojourn.config.{config}")  
+    if state.get('jwt_secret'):
+        cfg.JWT_SECRET_KEY = state.get('jwt_secret')
+    else:
+        secret_encode_key = secrets.token_bytes(32)
+        cfg.JWT_SECRET_KEY = secret_encode_key
+        state['jwt_secret'] = secret_encode_key
+        save_state(state)
+
     app.config.from_object(cfg)
     
     daos = init_daos(

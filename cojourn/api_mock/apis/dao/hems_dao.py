@@ -1,10 +1,11 @@
 from datetime import timedelta
 from http import HTTPStatus
 from cojourn.api_mock.apis.protocols import HEMSProtocol
-
 from cojourn.api_mock.apis.namespace import hems_ns
 from flask import current_app
 import jwt
+import secrets
+from cojourn.state import load_state
 
 class HEMSDAO(HEMSProtocol):
     def __init__(self, hems=None):
@@ -30,8 +31,13 @@ class HEMSDAO(HEMSProtocol):
         return self.hems
 
     def generate_new_jwt(self):
-        jwt_data = {'sub': "1234567890", 'name': "John Doe", 'iat': 1516239022}
-        encoded_jwt = jwt.encode(jwt_data, "super secret", algorithm="HS256")
+        state = load_state
+        if self.hems.get('jwt'):
+            return self.hems['jwt']
+        jwt_data = {'sub', secrets.token_bytes(32)}
+        if not state.get('jwt_secret'):
+            raise NotImplementedError
+        encoded_jwt = jwt.encode(jwt_data, state.get('jwt_secret'), algorithm="HS256")
         self.hems['jwt'] = encoded_jwt
         return encoded_jwt
 
