@@ -4,6 +4,7 @@ from cojourn.api_mock.apis.protocols import HEMSProtocol
 from cojourn.api_mock.apis.namespace import hems_ns
 from flask import current_app
 import jwt
+
 import secrets
 from cojourn.state import load_state
 
@@ -31,6 +32,7 @@ class HEMSDAO(HEMSProtocol):
         return self.hems
 
     def generate_new_jwt(self):
+
         state = load_state()
         if self.hems.get('jwt'):
             return self.hems['jwt']
