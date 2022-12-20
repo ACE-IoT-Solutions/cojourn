@@ -23,21 +23,26 @@ from cojourn.state import load_state, save_state
 
 import secrets
 
+import logging
+from volttron.platform.agent import utils
+_log = logging.getLogger(__name__)
+utils.setup_logging()
+__version__ = "0.3.0"
 
 def create_app(config: str, auth_dao: AuthProtocol=None, device_dao: DeviceProtocol=None, hems_dao: HEMSProtocol=None, home_dao: HomeProtocol=None, user_dao: UserProtocol=None) -> Flask:
     app = Flask(__name__)
-    state = load_state
-    cfg = import_string(f"cojourn.config.{config}")  
+    state = load_state()
+    cfg = import_string(f"cojourn.config.{config}")
     if state.get('jwt_secret'):
         cfg.JWT_SECRET_KEY = state.get('jwt_secret')
     else:
-        secret_encode_key = secrets.token_bytes(32)
+        secret_encode_key = secrets.token_hex(32)
         cfg.JWT_SECRET_KEY = secret_encode_key
         state['jwt_secret'] = secret_encode_key
         save_state(state)
 
     app.config.from_object(cfg)
-    
+
     daos = init_daos(
         auth_dao,
         device_dao,

@@ -34,7 +34,6 @@ from flask import current_app
 
 state = load_state()
 
-
 @device_ns.route("/")
 class DeviceList(Resource):
     """Shows a list of all devices"""
