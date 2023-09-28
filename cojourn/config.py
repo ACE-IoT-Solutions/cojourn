@@ -17,6 +17,7 @@ class ProductionConfig(Config):
 
 
 class DevelopmentConfig(Config):
+    SERVER_NAME = None
     ENV = "development"
     DEBUG = True
 

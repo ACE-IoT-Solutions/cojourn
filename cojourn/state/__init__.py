@@ -2,13 +2,18 @@ from os.path import exists
 from pathlib import Path
 from shutil import copyfile
 import json
+import uuid
 
-def copy_example_state():
+def generate_new_state():
     copyfile(f"{Path(__file__).parent / 'example-state.json'}", 'state.json')
+    with open('state.json', 'rw') as statefile:
+        state = json.loads(statefile.read())
+        state['home']['id'] = str(uuid.uuid1())
+        statefile.write(json.dumps(state))
 
 def load_state():
     if not exists('state.json'):
-        copy_example_state()
+        generate_new_state()
 
     with open('state.json', 'r') as f:
         data = f.read()
