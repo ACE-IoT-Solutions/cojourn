@@ -3,10 +3,11 @@ from enum import Enum
 
 class DeviceType(str, Enum):
     WATER_HEATER = 'water_heater'
-    THERMOSTAT = 'thermostat'
+    THERMOSTAT = 'venstar_tstat'
     HOME_BATTERY = 'home_battery'
     EV_CHARGER = 'ev_charger'
     PV_SYSTEM = 'pv_system'
+    RAINFOREST_EAGLE = 'power_meter'
 
 class DemandResponseStatus(str, Enum):
     NORMAL = 'normal'
