@@ -6,17 +6,18 @@ import uuid
 
 def generate_new_state():
     copyfile(f"{Path(__file__).parent / 'example-state.json'}", 'state.json')
-    with open('state.json', 'rw') as statefile:
+    with open('state.json', 'r', encoding='utf-8') as statefile:
         state = json.loads(statefile.read())
-        state['home']['id'] = str(uuid.uuid1())
+    state['home']['id'] = str(uuid.uuid1())
+    with open('state.json', 'w', encoding='utf-8') as statefile:
         statefile.write(json.dumps(state))
 
 def load_state():
     if not exists('state.json'):
         generate_new_state()
 
-    with open('state.json', 'r') as f:
-        data = f.read()
+    with open('state.json', 'r', encoding='utf-8') as statefile:
+        data = statefile.read()
         return json.loads(data)
 
 def save_state(state):
@@ -27,5 +28,5 @@ def save_state(state):
     state_string = json.dumps(state, sort_keys=True, indent=2)
     if len(state_string) == 0:
         return
-    with open('state.json', 'w+') as state_file:
-        state_file.write(state_string)
+    with open('state.json', 'w+', encoding='utf-8') as statefile:
+        statefile.write(state_string)
