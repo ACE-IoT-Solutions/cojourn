@@ -11,7 +11,10 @@ import netifaces as ni
 state = load_state()
 JWT_FILE = "/var/lib/volttron/cojourn.jwt"
 SHARED_SECRET = "6a5aa870-ed67-454a-b05d-ba9a5b2d52c5"
-MAC_ADDRESS = ni.ifaddresses("eth1")[ni.AF_LINK][0]["addr"].replace(":", "")
+try: 
+    MAC_ADDRESS = ni.ifaddresses("eth1")[ni.AF_LINK][0]["addr"].replace(":", "")
+except ValueError:
+    MAC_ADDRESS = ni.ifaddresses("eth0")[ni.AF_LINK][0]["addr"].replace(":", "")
 
 
 @hems_ns.route("/")
@@ -70,7 +73,8 @@ class HEMSJWTGen(Resource):
             return error
 
         if decoded_jwt.get("authorized"):
-            current_app.jwt = current_app.config["HEMSDAO"].generate_new_jwt()
+            received_jwt = current_app.config["HEMSDAO"].generate_new_jwt()
+            current_app.jwt = received_jwt
             return {'jwt': current_app.jwt}, HTTPStatus.OK
         else:
             return HTTPStatus.UNAUTHORIZED
