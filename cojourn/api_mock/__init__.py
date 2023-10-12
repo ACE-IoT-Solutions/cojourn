@@ -27,7 +27,7 @@ import logging
 from volttron.platform.agent import utils
 _log = logging.getLogger(__name__)
 utils.setup_logging()
-__version__ = "0.3.0"
+__version__ = "0.4.0"
 
 def create_app(config: str, jwt_secret: str, auth_dao: AuthProtocol=None, device_dao: DeviceProtocol=None, hems_dao: HEMSProtocol=None, home_dao: HomeProtocol=None, user_dao: UserProtocol=None) -> Flask:
     app = Flask(__name__)
