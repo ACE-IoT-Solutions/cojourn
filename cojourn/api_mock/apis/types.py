@@ -3,7 +3,7 @@ from enum import Enum
 
 class DeviceType(str, Enum):
     WATER_HEATER = 'water_heater'
-    THERMOSTAT = 'venstar_tstat'
+    THERMOSTAT = 'thermostat'
     HOME_BATTERY = 'home_battery'
     EV_CHARGER = 'ev_charger'
     PV_SYSTEM = 'pv_system'
