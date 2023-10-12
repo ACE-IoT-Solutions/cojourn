@@ -8,7 +8,7 @@ DESCRIPTION = 'A mock Flask API intended to be used with OpenHEMs'
 URL = 'https://github.com/ACE-IoT-Solutions/cojourn'
 AUTHOR = 'ACE IoT Solutions'
 REQUIRES_PYTHON = '>=3.8.5'
-VERSION = '0.1.0'
+VERSION = '0.2.0'
 
 REQUIRED = [
     "click",
