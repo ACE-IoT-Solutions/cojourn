@@ -65,34 +65,34 @@ class DeviceList(Resource):
         return my_device, HTTPStatus.CREATED
 
 
-@device_ns.route("/<string:id>")
+@device_ns.route("/<string:device_id>")
 class Device(Resource):
     """Get device by id"""
 
     @device_ns.doc("get device by id")
     # @device_ns.marshal_with(device, envelope='device', skip_none=True)
     @jwt_required()
-    def get(self, id):
+    def get(self, device_id):
         """get device by id"""
         sleep(1)
-        return current_app.config["DeviceDAO"].get(id), HTTPStatus.OK
+        return current_app.config["DeviceDAO"].get(device_id), HTTPStatus.OK
 
     @device_ns.doc("Update device")
     @device_ns.expect(device)
     @device_ns.marshal_with(device, envelope="device", code=HTTPStatus.OK)
     @jwt_required()
-    def patch(self, id):
+    def patch(self, device_id):
         """update device state"""
         if device_ns.payload is None:
             return "No payload", HTTPStatus.BAD_REQUEST
 
-        myDevice = current_app.config["DeviceDAO"].update(id, device_ns.payload)
+        my_device = current_app.config["DeviceDAO"].update(id, device_ns.payload)
         state["devices"] = current_app.config["DeviceDAO"].get_list()
         save_state(state)
-        return myDevice, HTTPStatus.OK
+        return my_device, HTTPStatus.OK
 
 
-@device_ns.route("/<string:id>/set_der_status")
+@device_ns.route("/<string:device_id>/set_der_status")
 class Device(Resource):
     @device_ns.doc("Update device DR status")
     @device_ns.expect(device_der_status)
@@ -109,7 +109,7 @@ class Device(Resource):
         return my_device, HTTPStatus.OK
 
 
-@device_ns.route(f"/{DeviceType.THERMOSTAT}/<string:id>")
+@device_ns.route(f"/{DeviceType.THERMOSTAT}/<string:device_id>")
 class Thermostat(Resource):
     """Get Thermostat"""
 
@@ -142,7 +142,7 @@ class Thermostat(Resource):
         return my_device, HTTPStatus.OK
 
 
-@device_ns.route(f"/{DeviceType.WATER_HEATER}/<string:id>")
+@device_ns.route(f"/{DeviceType.WATER_HEATER}/<string:device_id>")
 class WaterHeater(Resource):
     """Get Water Heater"""
 
@@ -173,7 +173,7 @@ class WaterHeater(Resource):
         return my_device, HTTPStatus.OK
 
 
-@device_ns.route(f"/{DeviceType.WATER_HEATER}/<string:id>/usage")
+@device_ns.route(f"/{DeviceType.WATER_HEATER}/<string:device_id>/usage")
 class WaterHeaterPowerUsage(Resource):
     """Get timeseries usage data for Water Heater"""
 
@@ -204,7 +204,7 @@ class WaterHeaterPowerUsage(Resource):
             return None, HTTPStatus.NOT_FOUND
 
 
-@device_ns.route(f"/{DeviceType.HOME_BATTERY}/<string:id>")
+@device_ns.route(f"/{DeviceType.HOME_BATTERY}/<string:device_id>")
 class HomeBattery(Resource):
     """Get Home Battery"""
 
@@ -235,7 +235,7 @@ class HomeBattery(Resource):
         return my_device, HTTPStatus.OK
 
 
-@device_ns.route(f"/{DeviceType.HOME_BATTERY}/<string:id>/update_reserve_limit")
+@device_ns.route(f"/{DeviceType.HOME_BATTERY}/<string:device_id>/update_reserve_limit")
 class HomeBatteryReserveLimit(Resource):
     """Update Home Battery Reserve Limit"""
 
@@ -243,20 +243,20 @@ class HomeBatteryReserveLimit(Resource):
     @device_ns.expect(home_battery_reserve_limit)
     @device_ns.marshal_with(home_battery, envelope="home_battery", code=HTTPStatus.OK)
     @jwt_required()
-    def post(self, id):
+    def post(self, device_id):
         """update home_battery reserve limit"""
         if device_ns.payload is None:
             return "No payload", HTTPStatus.BAD_REQUEST
 
         updated_device = current_app.config[
             "DeviceDAO"
-        ].home_battery_reserve_limit_update(id, device_ns.payload)
+        ].home_battery_reserve_limit_update(device_id, device_ns.payload)
         state["devices"] = current_app.config["DeviceDAO"].get_list()
         save_state(state)
         return updated_device, HTTPStatus.OK
 
 
-@device_ns.route(f"/{DeviceType.HOME_BATTERY}/<string:id>/update_charge_rate")
+@device_ns.route(f"/{DeviceType.HOME_BATTERY}/<string:device_id>/update_charge_rate")
 class UpdateHomeBatteryChargeRate(Resource):
     """Update Home Battery Charge Rate"""
 
@@ -278,7 +278,7 @@ class UpdateHomeBatteryChargeRate(Resource):
         return my_device, HTTPStatus.OK
 
 
-@device_ns.route(f"/{DeviceType.EV_CHARGER}/<string:id>")
+@device_ns.route(f"/{DeviceType.EV_CHARGER}/<string:device_id>")
 class EVCharger(Resource):
     """Get EV Charger"""
 
@@ -309,7 +309,7 @@ class EVCharger(Resource):
         return my_device, HTTPStatus.OK
 
 
-@device_ns.route(f"/{DeviceType.EV_CHARGER}/<string:id>/update_charge_rate")
+@device_ns.route(f"/{DeviceType.EV_CHARGER}/<string:device_id>/update_charge_rate")
 class UpdateEVChargeRate(Resource):
     """Update EV Charger Charge Rate"""
 
@@ -317,20 +317,20 @@ class UpdateEVChargeRate(Resource):
     @device_ns.expect(ev_charge_rate)
     @device_ns.marshal_with(ev_charger, envelope="ev_charger", code=HTTPStatus.OK)
     @jwt_required()
-    def post(self, id):
+    def post(self, device_id):
         """update ev_charger charge rate"""
         if device_ns.payload is None:
             return "No payload", HTTPStatus.BAD_REQUEST
 
-        myDevice = current_app.config["DeviceDAO"].ev_charge_rate_update(
-            id, device_ns.payload
+        my_device = current_app.config["DeviceDAO"].ev_charge_rate_update(
+            device_id, device_ns.payload
         )
         state["devices"] = current_app.config["DeviceDAO"].get_list()
         save_state(state)
-        return myDevice, HTTPStatus.OK
+        return my_device, HTTPStatus.OK
 
 
-@device_ns.route(f"/{DeviceType.PV_SYSTEM}/<string:id>")
+@device_ns.route(f"/{DeviceType.PV_SYSTEM}/<string:device_id>")
 class PVSystem(Resource):
     """Get PV System"""
 
@@ -361,7 +361,7 @@ class PVSystem(Resource):
         return my_device, HTTPStatus.OK
 
 
-@device_ns.route(f"/{DeviceType.PV_SYSTEM}/<string:id>/generation")
+@device_ns.route(f"/{DeviceType.PV_SYSTEM}/<string:device_id>/generation")
 class PVSystemGeneration(Resource):
     """Get timeseries generation data for solar panels"""
 
@@ -404,7 +404,7 @@ class PVSystemGeneration(Resource):
             return None, HTTPStatus.NOT_FOUND
 
 
-@device_ns.route(f"/{DeviceType.THERMOSTAT}/<string:id>/update_setpoint")
+@device_ns.route(f"/{DeviceType.THERMOSTAT}/<string:device_id>/update_setpoint")
 class Device(Resource):
     @device_ns.expect(temperature_params)
     @device_ns.doc("Set thermostat temperature")
