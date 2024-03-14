@@ -4,7 +4,7 @@ from shutil import copyfile
 import json
 
 def load_state():
-    if not exists('state.json'):
+    if not exists('/tmp/state.json'):
         copyfile(f"{Path(__file__).parent / 'example-state.json'}", '/tmp/state.json')
 
     with open('/tmp/state.json', 'r') as f:
