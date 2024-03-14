@@ -11,6 +11,8 @@ class Config(object):
 
 
 class ProductionConfig(Config):
+    HOST = "0.0.0.0"
+    SERVER_NAME=None
     ENV = "production"
     DEBUG = False
     TESTING = False
